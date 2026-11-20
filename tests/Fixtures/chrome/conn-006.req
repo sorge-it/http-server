@@ -1,0 +1,15 @@
+OPTIONS /cors HTTP/1.1
+Host: localhost:61488
+Connection: keep-alive
+Accept: */*
+Access-Control-Request-Method: PUT
+Access-Control-Request-Headers: x-custom
+Origin: http://127.0.0.1:61488
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: cross-site
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:61488/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7
+

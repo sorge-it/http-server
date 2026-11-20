@@ -1,0 +1,19 @@
+includes:
+    - vendor/pestphp/pest-plugin-phpstan/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+    reportUnmatchedIgnoredErrors: true
+    ignoreErrors:
+        # The example of the README is the code a reader writes. PDO throws since PHP 8, so query()
+        # gives no false, and FETCH_COLUMN of a TEXT column gives strings.
+        -
+            identifier: method.nonObject
+            path: tests/Example/ChromeTest.php
+        -
+            identifier: argument.type
+            path: tests/Example/ChromeTest.php
+    tmpDir: .tmp/phpstan

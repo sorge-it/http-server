@@ -1,0 +1,91 @@
+name: Go net/http of FrankenPHP
+
+# Against the Go of the FrankenPHP of release.lock: composer check:go, then GoNetHttpTest with that
+# Go for the parser and more mutated requests. The answers come from that FrankenPHP. Each step
+# runs; a difference in one fails the job.
+
+on:
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tests/Fixtures/go-net-http/**
+      - tests/Fixtures/frankenphp/release.lock
+      - tests/GoNetHttp/**
+      - tests/FrankenPhp/**
+      - tests/Pest.php
+      - tests/Upstream.php
+      - composer.json
+      - .github/workflows/go-net-http.yml
+  pull_request:
+    paths:
+      - tests/Fixtures/go-net-http/**
+      - tests/Fixtures/frankenphp/release.lock
+      - tests/GoNetHttp/**
+      - tests/FrankenPhp/**
+      - tests/Pest.php
+      - tests/Upstream.php
+      - composer.json
+      - .github/workflows/go-net-http.yml
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go of FrankenPHP
+    runs-on: ubuntu-24.04
+    # Each mutated request with limits of its own starts a FrankenPHP for them.
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: sockets
+          coverage: none
+          tools: composer:2.10.3@sha256:7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # The binary is about 200 MB; without the cache each run loads it again.
+      - name: Cache FrankenPHP
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0 # zizmor: ignore[cache-poisoning]
+        with:
+          path: .frankenphp
+          key: frankenphp-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tests/Fixtures/frankenphp/release.lock') }}
+
+      - name: Install FrankenPHP
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: composer frankenphp:install
+
+      - name: Compare with go.lock
+        id: compare
+        run: composer check:go
+
+      - name: Setup that Go
+        id: setup
+        if: ${{ !cancelled() && steps.compare.outputs.version != '' }}
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.compare.outputs.version }}
+          cache: false
+
+      # GoReference runs only the Go that VERSION names.
+      - name: Test with that Go
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        env:
+          GO_NET_HTTP_FUZZ: '20000'
+        run: |
+          go env GOVERSION > tests/Fixtures/go-net-http/go/VERSION
+          vendor/bin/pest --testsuite=GoNetHttp --exclude-group=pins

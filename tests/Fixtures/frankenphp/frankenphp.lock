@@ -1,0 +1,6 @@
+# The files of FrankenPHP that src/Internal/Php.php follows, with their blobs at v1.13.6
+# (6775138789d2d0b834b6447cdc3e56b383fd651d), in the order of git ls-tree.
+# composer check:frankenphp fails when the newest release of FrankenPHP has other blobs.
+356b1a4f63e43a9437e26c1761e8630c44b2d39c  cgi.go
+8fdd5750f8b83d6e5ae8d373ed149cb23b29ce5f  frankenphp.c
+7c5170d3a7735266fc92c1ddf53a9805b24a4c2c  frankenphp.go

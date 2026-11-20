@@ -1,0 +1,110 @@
+{
+    "name": "sorge-it/http-server",
+    "description": "In-process HTTP/1.1 server for Pest and PHPUnit browser tests, built for coding agents. The page sees the test's RefreshDatabase transaction, actingAs() user and fakes. No event loop, no package dependencies; tests compare each response to a valid request byte for byte with FrankenPHP. Loopback only; not for production, WebDriver or HTTP mocks.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["http-server", "http-1.1", "in-process", "psr-15", "zero-dependency", "testing", "browser-testing", "pest", "pestphp", "phpunit", "laravel", "symfony", "refresh-database", "database-transactions", "frankenphp", "chrome", "headless-chrome", "coding-agents", "ai-agents", "agentic-engineering"],
+    "homepage": "https://github.com/sorge-it/http-server",
+    "authors": [
+        {
+            "name": "Stefan Sorge",
+            "homepage": "https://github.com/sorge-it"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/sorge-it/http-server",
+        "docs": "https://github.com/sorge-it/http-server#readme",
+        "security": "https://github.com/sorge-it/http-server/blob/main/SECURITY.md"
+    },
+    "require": {
+        "php": "^8.4",
+        "ext-filter": "*"
+    },
+    "require-dev": {
+        "ext-sockets": "*",
+        "laravel/pint": "^1.29",
+        "pestphp/pest": "^5.3",
+        "pestphp/pest-plugin-phpstan": "^5.2",
+        "pestphp/pest-plugin-type-coverage": "^5.0",
+        "phpstan/phpstan": "^2.2",
+        "rector/rector": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "SorgeIt\\HttpServer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SorgeIt\\HttpServer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:type-coverage",
+            "@test:unit"
+        ],
+        "test:unit": [
+            "Composer\\Config::disableProcessTimeout",
+            "pest"
+        ],
+        "test:types": "phpstan --memory-limit=1G",
+        "test:type-coverage": "@php -d memory_limit=1G vendor/bin/pest --type-coverage --min=100 --no-cache --configuration=type-coverage.xml",
+        "test:coverage": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -d memory_limit=1G vendor/bin/pest --coverage --min=100"
+        ],
+        "test:mutation": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -d memory_limit=1G vendor/bin/pest --mutate --everything --covered-only --min=99"
+        ],
+        "test:lint": [
+            "pint --test",
+            "rector --dry-run"
+        ],
+        "lint": [
+            "rector",
+            "pint"
+        ],
+        "go:install": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/GoNetHttp/install-go.php"
+        ],
+        "go:extract": "@php tests/GoNetHttp/extract.php",
+        "frankenphp:install": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/FrankenPhp/install-frankenphp.php"
+        ],
+        "frankenphp:lock": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/FrankenPhp/lock-frankenphp.php"
+        ],
+        "check:go": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/GoNetHttp/check-go.php"
+        ],
+        "check:caddy": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/Caddy/check-caddy.php"
+        ],
+        "check:frankenphp": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php tests/FrankenPhp/check-frankenphp.php"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.4.1"
+        },
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "lock": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,15 @@
+{
+    "name": "demo/serve",
+    "description": "The app the demo of sorge-it/http-server runs.",
+    "license": "MIT",
+    "require": {
+        "ext-pdo_sqlite": "*",
+        "sorge-it/http-server": "*@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../.."
+        }
+    ]
+}

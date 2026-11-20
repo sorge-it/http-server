@@ -1,0 +1,6 @@
+# The files of Caddy that src/Internal/Caddy.php and the probes of cases.json follow, with their
+# blobs at v2.11.9 (0d98caea58f794f88e709b1bef2880996a471bca), in the order of git ls-tree.
+# composer check:caddy fails when the newest release of Caddy has other blobs.
+e9819ed0f9a821cd129a4b93ad979e501ea08571  modules/caddyhttp/app.go
+792ef495e313e337138b5c25f3208c91a0409ea8  modules/caddyhttp/errors.go
+a101882008b3ecbd5c20ea19b7b0a612a8e8bda3  modules/caddyhttp/server.go

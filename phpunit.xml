@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+         failOnRisky="true"
+         cacheDirectory=".tmp/phpunit">
+    <testsuites>
+        <testsuite name="RequestLine">
+            <directory>tests/RequestLine</directory>
+        </testsuite>
+        <testsuite name="Headers">
+            <directory>tests/Headers</directory>
+        </testsuite>
+        <testsuite name="Framing">
+            <directory>tests/Framing</directory>
+        </testsuite>
+        <testsuite name="Smuggling">
+            <directory>tests/Smuggling</directory>
+        </testsuite>
+        <testsuite name="Fuzz">
+            <directory>tests/Fuzz</directory>
+        </testsuite>
+        <testsuite name="Limits">
+            <directory>tests/Limits</directory>
+        </testsuite>
+        <testsuite name="Connection">
+            <directory>tests/Connection</directory>
+        </testsuite>
+        <testsuite name="Responses">
+            <directory>tests/Responses</directory>
+        </testsuite>
+        <testsuite name="Files">
+            <directory>tests/Files</directory>
+        </testsuite>
+        <testsuite name="Handler">
+            <directory>tests/Handler</directory>
+        </testsuite>
+        <testsuite name="Transport">
+            <directory>tests/Transport</directory>
+        </testsuite>
+        <testsuite name="Api">
+            <directory>tests/Api</directory>
+        </testsuite>
+        <testsuite name="Scope">
+            <directory>tests/Scope</directory>
+        </testsuite>
+        <testsuite name="GoNetHttp">
+            <directory>tests/GoNetHttp</directory>
+        </testsuite>
+        <testsuite name="FrankenPhp">
+            <directory>tests/FrankenPhp</directory>
+        </testsuite>
+        <testsuite name="BeyondGo">
+            <directory>tests/BeyondGo</directory>
+        </testsuite>
+        <testsuite name="Example">
+            <directory>tests/Example</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

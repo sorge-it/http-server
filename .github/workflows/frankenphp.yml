@@ -1,0 +1,79 @@
+name: Latest FrankenPHP
+
+# Against the newest release of FrankenPHP: composer check:frankenphp, then each suite with the
+# binary it loads, because each suite that compares answers compares them with FrankenPHP. Each
+# step runs; a difference fails the job.
+
+on:
+  schedule:
+    - cron: '53 5 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tests/Fixtures/frankenphp/**
+      - tests/Fixtures/caddy/**
+      - tests/FrankenPhp/**
+      - tests/Pest.php
+      - src/Internal/Php.php
+      - src/Internal/Caddy.php
+      - tests/Upstream.php
+      - composer.json
+      - .github/workflows/frankenphp.yml
+  pull_request:
+    paths:
+      - tests/Fixtures/frankenphp/**
+      - tests/Fixtures/caddy/**
+      - tests/FrankenPhp/**
+      - tests/Pest.php
+      - src/Internal/Php.php
+      - src/Internal/Caddy.php
+      - tests/Upstream.php
+      - composer.json
+      - .github/workflows/frankenphp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  frankenphp:
+    name: Newest FrankenPHP
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: sockets
+          coverage: none
+          tools: composer:2.10.3@sha256:7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6
+
+      # The Go of the reference of the parser test.
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: tests/GoNetHttp/go.mod
+          cache: false
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # The token only raises the limit of the API of GitHub; the check needs none.
+      - name: Compare with release.lock, frankenphp.lock and php-src.lock
+        id: newest
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: composer check:frankenphp
+
+      - name: Test with that FrankenPHP
+        if: ${{ !cancelled() && steps.newest.outputs.binary != '' }}
+        env:
+          FRANKENPHP_BINARY: ${{ steps.newest.outputs.binary }}
+        run: vendor/bin/pest --exclude-group=pins

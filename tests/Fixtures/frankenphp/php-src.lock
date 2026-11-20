@@ -1,0 +1,7 @@
+# The files of PHP that src/Internal/Php.php follows, with their blobs at php-8.5.13
+# (46bcb661df53d9ded93fef239e15707bf7cea2e9), the PHP of FrankenPHP v1.13.6, in the order of git
+# ls-tree. composer check:frankenphp fails when the PHP of the newest FrankenPHP has other blobs.
+62145077676bf327063bf74596dff44630275262  ext/standard/head.c
+5c64a194644494ce87d88ee425c8c8817eac861f  main/SAPI.c
+101406fb63a70d5e2ec48162e91e6a353ae40709  main/main.c
+32de70862c2d843745763464ad7ba4955b5b10d8  main/output.c

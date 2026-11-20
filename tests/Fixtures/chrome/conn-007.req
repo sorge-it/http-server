@@ -1,0 +1,15 @@
+GET /ws HTTP/1.1
+Host: 127.0.0.1:61488
+Connection: Upgrade
+Pragma: no-cache
+Cache-Control: no-cache
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+Upgrade: websocket
+Origin: http://127.0.0.1:61488
+Sec-WebSocket-Version: 13
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7
+Cookie: a=1; b=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Sec-WebSocket-Key: J6vao8WAu25o8BvZx151ow==
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+

@@ -1,0 +1,29 @@
+# The files of Go that cases.json, its probes and the limits follow, and the LICENSE of go/, with
+# their blobs at go1.27.4 (7b2881024c95a11ddb86663a616340aa3a88b67f), in the order of git ls-tree.
+# composer check:go fails when the Go of the FrankenPHP of release.lock has other blobs.
+2a7cf70da6e498df9c11ab6a5eaa2ddd7af34da4  LICENSE
+f9b762be8d49667f8714742d616b24a60bfc10d4  src/bufio/bufio.go
+befba425cc3bd52048b7997f78f4e5292c77add7  src/internal/runtime/gc/sizeclasses.go
+5b039e985789b77ddfdbbd75e9962b1c29293b86  src/io/io.go
+b8b080bece92b73bca93bddc16868220fd7c380b  src/net/http/header.go
+0b08a97a0831ecc768effee97fb341c827ccf8e6  src/net/http/internal/chunked.go
+312f1734a6385caaf09c987beb4f12a3a05f1928  src/net/http/internal/chunked_test.go
+23b96e8992334c05073bdab57283537544c308d4  src/net/http/internal/sniff.go
+2da312287922e27ee1289f9ca633a9852d367b0c  src/net/http/readrequest_test.go
+93329bcc801d6fa976bbe64f0ce50366e20d49a0  src/net/http/request.go
+37b888313d2abf8d8aadd19bfa18d01e51738ae4  src/net/http/request_test.go
+12dfb65196a4afd25805a6fdbd08f2da77b167fa  src/net/http/response.go
+74d1009177dc4fc0ab78ac51f3f4f0a790cebef6  src/net/http/serve_test.go
+5e9da9d50031d94e460cc2ddb4b6c341d78a04b2  src/net/http/server.go
+b8257c39c5f497b9da3de7e7338f459dd1915c43  src/net/http/sniff_test.go
+cd90877ef05fadf9074b19d2362a2caa8d57a4d2  src/net/http/status.go
+997b9a00404364d54a7a73214e71e5ea0df80680  src/net/http/transfer.go
+b1a5a931035c4b141f61b58d6543e1c5c8481759  src/net/http/transfer_test.go
+57b8c6f70a369837b3c30de5784e1080b16e42c7  src/net/netip/netip.go
+53c65806a9ee4fce69f6e5f532f402d802eee756  src/net/textproto/reader.go
+57db4bd82f9d725e61493211bb283ffd2ca7695c  src/net/textproto/reader_test.go
+8d323e1f16eef0fac2894070d959b134d9aede17  src/net/textproto/textproto.go
+ebc0ff4520b7c6c4c57f5f8b0524452c073704b6  src/net/url/url.go
+da2325647d381747716c80522a7e3059ea45da6f  src/strconv/quote.go
+e6cd0ced39283ebdf38d79bbde002dc6db70b534  src/vendor/golang.org/x/net/http/httpguts/guts.go
+9b4de94019b424e2eaedce21c4b386625f2a94f9  src/vendor/golang.org/x/net/http/httpguts/httplex.go
