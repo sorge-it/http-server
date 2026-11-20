@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this package are in this file. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versions follow
+[Semantic Versioning](https://semver.org).
+
+## [Unreleased]
+
+## [1.0.0] - 2026-11-20
+
+The first public release. HttpServer is an in-process HTTP/1.1 server for Pest and PHPUnit
+browser tests, built for coding agents. It serves the page from inside the test process, so the
+page sees the test's `RefreshDatabase` transaction, `actingAs()` user and fakes. It has no event
+loop: the test calls `tick()` while it waits for the browser. It listens on loopback only. Within
+its scope, the browser gets the bytes that FrankenPHP 1.13.6 would send: its test suites compare each
+response with the FrankenPHP binary, in the form that Chrome receives, and the parser with Go
+`net/http`. The README states the scope and each deliberate difference. The 0.x releases were
+private.
+
+[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/sorge-it/http-server/releases/tag/v1.0.0

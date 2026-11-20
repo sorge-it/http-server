@@ -1,0 +1,6 @@
+/.frankenphp/
+/.go/
+/.tmp/
+/vendor/
+/works-with/composer.lock
+/works-with/vendor/

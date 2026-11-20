@@ -1,0 +1,76 @@
+name: mutation
+
+# A run of all of src/ takes about 3.3 hours on one core, so it runs each week and on request, not
+# on each push, and four jobs take a part of src/ each.
+# Composer, pinned by digest in `tools`, is updated by hand; Dependabot updates the actions.
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutation:
+    name: Mutation · ${{ matrix.part }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    # The parts have about the same number of mutants, and each had 99.6 % or more on 2026-11-06.
+    # The last part is the rest of src/, so a new file goes there. Its ignore lists the other files.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: Answer, Connection
+            path: src/Internal/Answer.php,src/Internal/Connection.php
+          - part: Php, BodyReader, ReadBuffer
+            path: src/Internal/Php.php,src/Internal/BodyReader.php,src/Internal/ReadBuffer.php
+          - part: Exchange, Server, Sniff
+            path: src/Internal/Exchange.php,src/Server.php,src/Internal/Sniff.php
+          - part: rest
+            path: src
+            ignore: src/Internal/Answer.php,src/Internal/Connection.php,src/Internal/Php.php,src/Internal/BodyReader.php,src/Internal/ReadBuffer.php,src/Internal/Exchange.php,src/Server.php,src/Internal/Sniff.php
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: sockets
+          coverage: pcov
+          tools: composer:2.10.3@sha256:7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6
+
+      # The Go of the reference of GoNetHttpTest.
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: tests/GoNetHttp/go.mod
+          cache: false
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Cache FrankenPHP
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0 # zizmor: ignore[cache-poisoning]
+        with:
+          path: .frankenphp
+          key: frankenphp-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tests/Fixtures/frankenphp/release.lock') }}
+
+      - name: Install FrankenPHP
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: composer frankenphp:install
+
+      # Serial: with --parallel, Pest Mutate counts each mutant as killed.
+      - name: Mutation
+        env:
+          MUTATE_PATH: ${{ matrix.path }}
+          MUTATE_IGNORE: ${{ matrix.ignore }}
+        run: composer test:mutation -- "--path=$MUTATE_PATH" ${MUTATE_IGNORE:+"--ignore=$MUTATE_IGNORE"}

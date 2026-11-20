@@ -1,0 +1,47 @@
+GET /i.png HTTP/1.1
+Host: 127.0.0.1:61488
+Connection: keep-alive
+sec-ch-ua-platform: "macOS"
+Accept-Language: de-DE,de;q=0.9
+sec-ch-ua: "Chromium";v="147", "Not.A/Brand";v="8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+sec-ch-ua-mobile: ?0
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://127.0.0.1:61488/
+Accept-Encoding: gzip, deflate, br, zstd
+
+GET /q?x=%C3%A4%20%22%3C%3E{}|^`%27&y=1 HTTP/1.1
+Host: 127.0.0.1:61488
+Connection: keep-alive
+sec-ch-ua-platform: "macOS"
+Accept-Language: de-DE,de;q=0.9
+sec-ch-ua: "Chromium";v="147", "Not.A/Brand";v="8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+sec-ch-ua-mobile: ?0
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:61488/
+Accept-Encoding: gzip, deflate, br, zstd
+Cookie: a=1; b=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+GET /a%20b/%C3%A4%22%7B%7D%7C%5E%60/%zz/x HTTP/1.1
+Host: 127.0.0.1:61488
+Connection: keep-alive
+sec-ch-ua-platform: "macOS"
+Accept-Language: de-DE,de;q=0.9
+sec-ch-ua: "Chromium";v="147", "Not.A/Brand";v="8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+sec-ch-ua-mobile: ?0
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:61488/
+Accept-Encoding: gzip, deflate, br, zstd
+Cookie: a=1; b=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+

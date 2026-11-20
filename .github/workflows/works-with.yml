@@ -1,0 +1,102 @@
+name: Works with Symfony, Laravel and PSR-15
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/works-with.yml
+      - composer.json
+      - src/**
+      - works-with/**
+  pull_request:
+    paths:
+      - .github/workflows/works-with.yml
+      - composer.json
+      - src/**
+      - works-with/**
+  # Weekly, as a new release of a framework can break a handler of the README without a commit here.
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its older run; every other run has a group of its own.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  # Each handler under "Works with" in the README serves the newest release of its framework. Not a
+  # required check: a new release of a framework must not block a pull request. Each framework has
+  # a step of its own, so the failed step names it.
+  works-with:
+    name: Works with
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: works-with
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: pdo_sqlite
+          coverage: none
+          tools: composer:2.10.3@sha256:7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6
+
+      # No lock file: each run installs the newest release of each framework. `outdated --strict`
+      # fails when a constraint holds one below its newest release.
+      - name: Install this checkout and the frameworks
+        run: |
+          composer update --no-interaction --prefer-dist
+          composer show --direct
+          composer outdated --direct --strict
+
+      - name: Audit the dependencies
+        run: composer audit
+
+      # Each script adds the row of its framework: the proof of this run, beside the run.
+      - name: Start the summary
+        run: |
+          {
+            echo '| Package | Version | PHP |'
+            echo '|---|---|---|'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Symfony
+        run: php symfony.php
+
+      - name: PSR-15
+        run: php psr-15.php
+
+      # The test runs in a Laravel app, as in a project: the newest skeleton with this checkout,
+      # outside the checkout.
+      - name: Create a Laravel app
+        run: |
+          app="$RUNNER_TEMP/laravel"
+          composer create-project --no-interaction --prefer-dist laravel/laravel "$app"
+          cp tests/symfony.php tests/laravel.php check.php "$app/tests/"
+          cp laravel/WorksWithTest.php "$app/tests/Feature/"
+          cp laravel/web.php "$app/routes/web.php"
+          cd "$app"
+          composer config repositories.http-server path "$GITHUB_WORKSPACE"
+          composer require --dev --no-interaction 'sorge-it/http-server:*@dev'
+          composer audit
+          composer outdated --strict laravel/framework
+
+      - name: Laravel
+        working-directory: ${{ runner.temp }}/laravel
+        run: |
+          php artisan test --filter=WorksWithTest
+          # A run without the test also ends with exit code 0. check.php adds the row of Laravel.
+          grep -q "^| \`laravel/framework\` |" "$GITHUB_STEP_SUMMARY" || { echo '::error::The test did not run: the summary has no row for laravel/framework.'; exit 1; }

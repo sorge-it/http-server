@@ -1,0 +1,20 @@
+{
+    "name": "sorge-it/http-server-works-with",
+    "description": "The project of the CI job works-with: the handlers of the README serve a Symfony kernel and a PSR-15 app with this checkout.",
+    "license": "MIT",
+    "require": {
+        "nyholm/psr7": "*",
+        "slim/slim": "*",
+        "sorge-it/http-server": "*@dev",
+        "symfony/framework-bundle": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": ".."
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    }
+}
