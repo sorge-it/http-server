@@ -62,7 +62,7 @@ final readonly class Answer
     public static function check(mixed $response): Response
     {
         if (! $response instanceof Response) {
-            throw new UnexpectedValueException('The handler gave '.get_debug_type($response).', not a Response.');
+            throw new UnexpectedValueException('The handler gave '.get_debug_type($response).', not a '.Response::class.'. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README.');
         }
 
         if ($response->file !== null && (! is_file($response->file) || ! is_readable($response->file))) {
