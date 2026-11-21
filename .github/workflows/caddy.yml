@@ -50,4 +50,6 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Compare with caddy.lock and frankenphp.lock
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: composer check:caddy

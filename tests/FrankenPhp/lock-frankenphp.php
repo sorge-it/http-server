@@ -11,7 +11,7 @@ use SorgeIt\HttpServer\Tests\Upstream;
 
 require __DIR__.'/../../vendor/autoload.php';
 
-$tag = Upstream::newestTag('https://github.com/php/frankenphp.git', '/^v1\.\d+\.\d+$/');
+$tag = Release::newest();
 $digests = Release::digests($tag);
 $assets = array_values(Release::ASSETS);
 sort($assets);

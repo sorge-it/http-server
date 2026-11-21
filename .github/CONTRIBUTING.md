@@ -134,8 +134,10 @@ composer frankenphp:lock   # new FrankenPHP versions into release.lock, needs gh
 ```
 
 - The `check:` commands need `composer install`, git and the network, but no token. `check:go` first
-  runs `frankenphp:install`, as the suites do. `check:go`, `check:frankenphp` and `frankenphp:lock`
-  also need PHP's curl extension.
+  runs `frankenphp:install`, as the suites do. Each `check:` command and `frankenphp:lock` also
+  needs PHP's curl extension.
+- The newest FrankenPHP is its newest release, not its newest tag: upstream tags a version and
+  publishes the release hours later.
 - `check:frankenphp` downloads the newest FrankenPHP binary into `.frankenphp/newest` and runs it.
   When it finds new versions, run `composer frankenphp:lock`. It writes the versions of the newest
   binary into `release.lock` after `gh attestation verify` shows that FrankenPHP's workflow built
