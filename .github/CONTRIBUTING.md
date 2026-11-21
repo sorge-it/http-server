@@ -2,8 +2,9 @@
 
 Pull requests are welcome. The issue tracker is closed: report a bug as a pull request with a
 failing test; a fix is welcome but not required. Vulnerabilities are the exception: report them
-privately; see [SECURITY.md](SECURITY.md). Everyone who takes part follows the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+privately; see the [security policy](https://github.com/sorge-it/http-server/security/policy).
+Everyone who takes part follows the
+[Code of Conduct](https://github.com/sorge-it/http-server/blob/main/.github/CODE_OF_CONDUCT.md).
 
 ## Setup
 
@@ -27,57 +28,15 @@ composer test                # Pint and Rector dry runs, PHPStan, 100% type cove
   `.frankenphp/`, verifies the SHA-256 against the GitHub API, and checks the versions the binary
   reports; the suite runs `frankenphp:install` itself before it starts FrankenPHP. FrankenPHP
   publishes no binary for macOS on x64, so those suites cannot run there; use a Docker job instead
-  (see [Before you open a pull request](#before-you-open-a-pull-request)).
+  (see [Tests](#tests)).
 - Where `gh` has a login or a token, `frankenphp:install` also uses `gh attestation verify` to
   check that FrankenPHP's workflow built the binary. A binary that fails the check is deleted.
   The check comes before the binary first runs. Where `gh` has neither, as in a Docker image, the
   binary runs unchecked; so in CI, a Docker job installs the binary on the runner, which has `gh`.
 
-## Reporting a bug
+## Tests
 
-Open a pull request that contains only a failing test (see [Writing a test](#writing-a-test)), and
-say what you expected. A maintainer adds the fix.
-
-## Fixing a bug
-
-Open a pull request with:
-
-- a test that fails without the change; see [Writing a test](#writing-a-test);
-- the change;
-- a line under `[Unreleased]` in `CHANGELOG.md` when the package's behavior changes;
-- a description of what went wrong and why the change fixes it, and the output of `php -v`.
-
-If you do not know how to fix it, describe the problem to a coding agent and let it draft the pull
-request. Review the change and run the tests before you open it.
-
-### Writing a test
-
-- Where Go `net/http` decides the result, the test is a probe in
-  `tests/Fixtures/go-net-http/cases.json`, with the fields `group`, `name`, `source: "probe"`,
-  `rule` (Go's file and function) and `request`, and the limits `maxHeaderBytes` or
-  `maxHeaderValueCount` where needed. Then run `composer go:extract`. The `GoNetHttp` suite sends
-  the probe to Go for the parser and to FrankenPHP for the response, and compares the bytes.
-- Where Caddy decides, the probe goes into `tests/Fixtures/caddy/cases.json` in the same form, with
-  Caddy's file and function as `rule`, and the `FrankenPhp` suite compares it against FrankenPHP.
-- No test spells out a FrankenPHP response as a literal. Where the handler must be PHP, compare
-  `answers()` with `modelAnswers()`.
-- Other tests go into the suite that covers their part.
-  [tests/Fixtures/README.md](tests/Fixtures/README.md) describes the fixtures.
-
-## Proposing a feature
-
-Read [Scope](README.md#scope) and [HTTP behavior](README.md#http-behavior) first. A feature
-outside the scope, such as TLS or a public address, will not be merged.
-
-- Each out-of-scope row of Scope has its guard in [`tests/Scope/out.php`](tests/Scope/out.php): a
-  pattern, a request, or the reason the row has none. A new out-of-scope row comes with its guard.
-- A change that removes out-of-scope behavior adds a pattern or a request that detects the behavior
-  if it comes back. Where neither can, the row's reason says why and names the test that detects
-  it.
-- A new limit comes with a `Limits` property, a status, a test for each side of the limit, and a
-  line with its default in [Limits and timeouts](README.md#limits-and-timeouts).
-
-## Before you open a pull request
+Before you open a pull request:
 
 ```sh
 composer test:coverage      # 100% line coverage, needs pcov or Xdebug
@@ -118,6 +77,23 @@ docker build --quiet --tag actionlint .github/docker/actionlint
 docker run --rm --volume "$PWD:/src:ro" --workdir /src actionlint -no-color
 ```
 
+### Writing a test
+
+- Where Go `net/http` decides the result, the test is a probe in
+  `tests/Fixtures/go-net-http/cases.json`, with the fields `group`, `name`, `source: "probe"`,
+  `rule` (Go's file and function) and `request`, and the limits `maxHeaderBytes` or
+  `maxHeaderValueCount` where needed. Then run `composer go:extract`. The `GoNetHttp` suite sends
+  the probe to Go for the parser and to FrankenPHP for the response, and compares the bytes.
+- Where Caddy decides, the probe goes into `tests/Fixtures/caddy/cases.json` in the same form, with
+  Caddy's file and function as `rule`, and the `FrankenPhp` suite compares it against FrankenPHP.
+- No test spells out a FrankenPHP response as a literal. Where the handler must be PHP, compare
+  `answers()` with `modelAnswers()`.
+- Other tests go into the suite that covers their part.
+  [tests/Fixtures/README.md](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/README.md)
+  describes the fixtures.
+
+### Mutation tests
+
 A workflow runs the mutation tests every week, split into four parts of `src/`. Run them with pcov
 when you change `src/`. They run one mutant after another, and all of `src/` takes several hours,
 so run only the files you changed, with `--path`. Do not use `--parallel`: with it, Pest Mutate
@@ -138,13 +114,7 @@ Two kinds of results can be misleading:
 - A mutant whose run takes too long counts as killed. Run such a mutant alone with `--id` before
   you count it as killed.
 
-## Review
-
-A maintainer reviews a pull request once it is ready for review and the `tests` workflow passes. A
-bug report may fail only in the test that it adds. Inactive drafts may be closed. Pull requests
-opened in bulk are closed without review.
-
-## Updating the pins (maintainers)
+### Updating the pins (maintainers)
 
 FrankenPHP rebuilds the binaries of its newest release every night: new bytes, and sometimes a new
 PHP or Caddy. That is why `release.lock` names the versions of FrankenPHP, PHP and Caddy, not a
@@ -173,3 +143,44 @@ composer frankenphp:lock   # new FrankenPHP versions into release.lock, needs gh
 - Then update each lock file that the `pins` group test in `tests/FrankenPhp/FrankenPhpTest.php`
   reads, each version that it names, and the tags in `tests/Fixtures/README.md`. The README names
   no pinned version.
+
+## Scope
+
+Read [Scope](https://github.com/sorge-it/http-server#scope) and
+[HTTP behavior](https://github.com/sorge-it/http-server#http-behavior) in the README first. A
+feature outside the scope, such as TLS or a public address, will not be merged.
+
+- Each out-of-scope row of Scope has its guard in
+  [`tests/Scope/out.php`](https://github.com/sorge-it/http-server/blob/main/tests/Scope/out.php): a
+  pattern, a request, or the reason the row has none. A new out-of-scope row comes with its guard.
+- A change that removes out-of-scope behavior adds a pattern or a request that detects the behavior
+  if it comes back. Where neither can, the row's reason says why and names the test that detects
+  it.
+- A new limit comes with a `Limits` property, a status, a test for each side of the limit, and a
+  line with its default in
+  [Limits and timeouts](https://github.com/sorge-it/http-server#limits-and-timeouts).
+
+## Pull requests
+
+### Reporting a bug
+
+Open a pull request that contains only a failing test (see [Writing a test](#writing-a-test)), and
+say what you expected. A maintainer adds the fix.
+
+### Fixing a bug
+
+Open a pull request with:
+
+- a test that fails without the change; see [Writing a test](#writing-a-test);
+- the change;
+- a line under `[Unreleased]` in `CHANGELOG.md` when the package's behavior changes;
+- a description of what went wrong and why the change fixes it, and the output of `php -v`.
+
+If you do not know how to fix it, describe the problem to a coding agent and let it draft the pull
+request. Review the change and run the tests before you open it.
+
+### Review
+
+A maintainer reviews a pull request once it is ready for review and the `tests` workflow passes. A
+bug report may fail only in the test that it adds. Inactive drafts may be closed. Pull requests
+opened in bulk are closed without review.
