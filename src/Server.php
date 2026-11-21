@@ -96,6 +96,25 @@ final class Server
             $host = '['.$host.']';
         }
 
+        // A socket that is bound but does not listen takes no connection. Its name is the address
+        // that the resolver makes of `$host`, also of `localhost`, `0` or `0.0`; only on that
+        // address, and only if it is loopback, does the server listen.
+        $probe = Quietly::run(static function () use ($host, &$code, &$message): mixed {
+            return stream_socket_server(sprintf('tcp://%s:0', $host), $code, $message, STREAM_SERVER_BIND);
+        });
+
+        if ($probe === false) {
+            throw new ListenFailed(sprintf('The server could not bind %s: %s.', $host, $message));
+        }
+
+        $name = (string) stream_socket_get_name($probe, false);
+        fclose($probe);
+        $host = substr($name, 0, (int) strrpos($name, ':'));
+
+        if (! $this->onLoopback(trim($host, '[]'))) {
+            throw new ListenFailed(sprintf('The server listens on loopback only, not on %s.', $host));
+        }
+
         // Without `tcp_nodelay`, Linux holds the body back until the client acknowledges the head,
         // and a client delays that ACK.
         $context = stream_context_create(['socket' => ['backlog' => self::BACKLOG, 'tcp_nodelay' => true]]);
@@ -107,18 +126,9 @@ final class Server
             throw new ListenFailed(sprintf('The server could not listen on %s:%d: %s. Port 0 picks a free port.', $host, $port, $message));
         }
 
-        $address = (string) stream_socket_get_name($listener, false);
-
-        // Checked after the bind, so a name such as `localhost` counts by the address it gave.
-        if (! $this->onLoopback($address)) {
-            fclose($listener);
-
-            throw new ListenFailed(sprintf('The server listens on loopback only, not on %s.', $address));
-        }
-
         stream_set_blocking($listener, false);
         $this->listener = $listener;
-        $this->address = $address;
+        $this->address = (string) stream_socket_get_name($listener, false);
     }
 
     /**
@@ -250,12 +260,12 @@ final class Server
     }
 
     /**
-     * Whether the address of a listener, such as `127.0.0.1:49152` or `[::1]:49152`, is in
-     * 127.0.0.0/8 or is ::1.
+     * Whether an IP address without brackets, such as `127.0.0.1` or `::1`, is in 127.0.0.0/8 or
+     * is ::1.
      */
     private function onLoopback(string $address): bool
     {
-        $ip = inet_pton(trim(substr($address, 0, (int) strrpos($address, ':')), '[]'));
+        $ip = inet_pton($address);
 
         return $ip === str_repeat("\0", 15)."\1" || (is_string($ip) && strlen($ip) === 4 && $ip[0] === "\x7F");
     }

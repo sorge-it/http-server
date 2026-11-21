@@ -115,27 +115,50 @@ it('listens on a name by the loopback address it gives, and on another address o
     '127.0.0.2' => ['127.0.0.2', '/^127\.0\.0\.2:\d+$/'],
 ]);
 
-it('refuses an address that is not loopback with ListenFailed, and no client reaches its port after it', function (string $host, string $address): void {
-    if ($host !== '0.0.0.0' && ! hasIpv6Loopback()) {
+it('refuses an address that is not loopback with ListenFailed before it binds the port', function (string $host, string $address): void {
+    if (str_contains($address, ':') && ! hasIpv6Loopback()) {
         $this->markTestSkipped('The system has no IPv6 loopback.');
     }
 
+    // On Linux, a bind of the port on each address fails while 127.0.0.1 listens on it: the
+    // refusal shows that the server checked before.
+    $taken = echoServer();
     $message = '';
 
     try {
-        new Server(static fn (): Response => new Response, $host);
+        new Server(static fn (): Response => new Response, $host, (int) substr($taken->address(), 10));
     } catch (ListenFailed $listenFailed) {
         $message = $listenFailed->getMessage();
+    } finally {
+        $taken->close();
     }
 
-    expect($message)->toMatch('/^The server listens on loopback only, not on '.preg_quote($address, '/').':(\d+)\.$/');
-    $port = (int) substr($message, strrpos($message, ':') + 1);
-    expect(withoutWarnings(static fn (): mixed => stream_socket_client('tcp://127.0.0.1:'.$port, timeout: 1.0)))->toBeFalse();
+    expect($message)->toBe('The server listens on loopback only, not on '.$address.'.');
 })->with([
     'IPv4, each address' => ['0.0.0.0', '0.0.0.0'],
+    'IPv4, each address, short' => ['0', '0.0.0.0'],
+    'IPv4, each address, shorter by a dot' => ['0.0', '0.0.0.0'],
     'IPv6, each address' => ['::', '[::]'],
+    'IPv6, each address, in brackets' => ['[::]', '[::]'],
     'IPv4 in the IPv6 form' => ['::ffff:127.0.0.1', '[::ffff:127.0.0.1]'],
 ]);
+
+it('names the address it could not bind', function (): void {
+    expect(fn (): Server => new Server(static fn (): Response => new Response, '2001:db8::1'))
+        ->toThrow(ListenFailed::class, 'The server could not bind [2001:db8::1]: ');
+});
+
+it('listens on the address that it checked, not on the host again', function (): void {
+    $taken = echoServer();
+
+    try {
+        // A second lookup of `127.1` could give another address than the checked one.
+        expect(fn (): Server => new Server(static fn (): Response => new Response, '127.1', (int) substr($taken->address(), 10)))
+            ->toThrow(ListenFailed::class, 'The server could not listen on 127.0.0.1:'.substr($taken->address(), 10).': ');
+    } finally {
+        $taken->close();
+    }
+});
 
 it('gives each request the IP and port of its client as Go gives RemoteAddr, and names both ends in the error of a read in the form of Go', function (string $host, string $client): void {
     if ($host === '::1' && ! hasIpv6Loopback()) {
