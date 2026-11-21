@@ -159,8 +159,11 @@ final class GoReference
         try {
             fwrite($client, $bytes);
             stream_set_timeout($client, 5);
+            $deadline = hrtime(true) / 1e9 + 5;
 
-            while (! feof($client) && fread($client, 1 << 16) !== false) {
+            // A read that times out gives '', not false: without the deadline, a Go that does not
+            // close would hold the suite.
+            while (! feof($client) && fread($client, 1 << 16) !== false && hrtime(true) / 1e9 < $deadline) {
             }
 
             // The first write after a close gets the reset; the second fails on it.
