@@ -13,8 +13,8 @@ it('answers the 500 of a handler that throws for a handler that gives no valid r
         ->and($errors)->toHaveCount(1)
         ->and($errors[0] ?? '')->toContain($message);
 })->with([
-    'null' => [static fn (Request $request): mixed => $request->path() === '/bad' ? null : new Response(200, [], 'ok'), 'The handler gave null, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README.'],
-    'a string' => [static fn (Request $request): mixed => $request->path() === '/bad' ? 'text' : new Response(200, [], 'ok'), 'The handler gave string, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README.'],
+    'null' => [static fn (Request $request): mixed => $request->path() === '/bad' ? null : new Response(200, [], 'ok'), 'The handler gave null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.'],
+    'a string' => [static fn (Request $request): mixed => $request->path() === '/bad' ? 'text' : new Response(200, [], 'ok'), 'The handler gave string, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README of sorge-it/http-server.'],
     // @phpstan-ignore argument.type (a handler result the server cannot send)
     'a header value that is a number' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, ['X-Count' => 5]) : new Response(200, [], 'ok'), 'ValueError: '.Response::class.'::__construct(): Argument #2 ($headers) has a value of X-Count that is not a string'],
     // @phpstan-ignore argument.type (a handler result the server cannot send)
@@ -179,7 +179,7 @@ it('calls onError with each throwable that becomes a 500 of PHP and its request,
     expect(substr_count($answer, 'HTTP/1.1 500 '))->toBe(2)
         ->and($calls)->toBe([
             [LogicException::class, 'broken', '/throws', 1],
-            [UnexpectedValueException::class, 'The handler gave null, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README.', '/null', 1],
+            [UnexpectedValueException::class, 'The handler gave null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.', '/null', 1],
         ]);
 });
 
@@ -263,7 +263,7 @@ it('keeps each throw of a handler without onError, so the next close() throws Cl
     expect(substr_count($answers, "HTTP/1.1 500 Internal Server Error\r\n"))->toBe(2)
         ->and(closedWithErrors($server))->toBe([
             ['LogicException: broken /a', 'LogicException: broken /b'],
-            'The server closed with 2 errors that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler; only a test that expects the error passes onError to the Server. The first, from GET /a: broken /a',
+            'The server closed with 2 errors that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler, or let each request finish before close(). To fail the test at the error instead of at close(), pass onError: static fn (Throwable $e): never => throw $e; a test that expects the error passes an onError that records it. The first, from GET /a: broken /a',
             true,
         ])
         ->and($server->streams())->toBe([[], []])

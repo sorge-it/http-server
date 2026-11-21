@@ -133,7 +133,7 @@ it('refuses an address that is not loopback with ListenFailed before it binds th
         $taken->close();
     }
 
-    expect($message)->toBe('The server listens on loopback only, not on '.$address.'.');
+    expect($message)->toBe('The server listens on loopback only, not on '.$address.'. Run the browser on the same host or in the same container as the test.');
 })->with([
     'IPv4, each address' => ['0.0.0.0', '0.0.0.0'],
     'IPv4, each address, short' => ['0', '0.0.0.0'],

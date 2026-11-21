@@ -118,7 +118,7 @@ final class Server
         $host = substr($name, 0, (int) strrpos($name, ':'));
 
         if (! $this->onLoopback(trim($host, '[]'))) {
-            throw new ListenFailed(sprintf('The server listens on loopback only, not on %s.', $host));
+            throw new ListenFailed(sprintf('The server listens on loopback only, not on %s. Run the browser on the same host or in the same container as the test.', $host));
         }
 
         // Without `tcp_nodelay`, Linux holds the body back until the client acknowledges the head,

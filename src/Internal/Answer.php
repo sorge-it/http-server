@@ -62,7 +62,7 @@ final readonly class Answer
     public static function check(mixed $response): Response
     {
         if (! $response instanceof Response) {
-            throw new UnexpectedValueException('The handler gave '.get_debug_type($response).', not a '.Response::class.'. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README.');
+            throw new UnexpectedValueException('The handler gave '.get_debug_type($response).', not a '.Response::class.'. '.($response === null ? 'Return a Response from every path of the handler.' : 'A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README of sorge-it/http-server.'));
         }
 
         if ($response->file !== null && (! is_file($response->file) || ! is_readable($response->file))) {
@@ -287,7 +287,7 @@ final readonly class Answer
     private static function chunk(mixed $chunk): string
     {
         if (! is_string($chunk)) {
-            throw new UnexpectedValueException('The body gave '.get_debug_type($chunk).', not a string.');
+            throw new UnexpectedValueException('The body gave '.get_debug_type($chunk).', not a string. A streamed body yields strings; for JSON, pass json_encode($data) as the body.');
         }
 
         return $chunk;

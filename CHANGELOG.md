@@ -8,6 +8,11 @@ All notable changes to this package are in this file. The format follows
 
 ### Changed
 
+- Four more messages name the way out: `ClosedWithErrors` names a request cut by `close()` and the
+  `onError` that fails the test at the error; a chunk that is not a string names `json_encode()`; a handler that returns `null`
+  is told to return a `Response` from every path; a host that is not loopback names where the
+  browser runs.
+
 - `SECURITY.md` moved to `.github/` and is no longer in the package. The security link in
   `composer.json` points to the security policy on GitHub.
 - Three messages name the fix. A handler that gives another type than `Response` names the full
