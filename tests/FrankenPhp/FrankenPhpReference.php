@@ -202,8 +202,7 @@ final class FrankenPhpReference
     public function stop(): void
     {
         foreach ($this->servers as [$process]) {
-            proc_terminate($process);
-            proc_close($process);
+            $this->kill($process);
         }
 
         $this->servers = [];
@@ -233,6 +232,18 @@ final class FrankenPhpReference
     }
 
     /**
+     * Ends the server with SIGKILL. On SIGTERM, FrankenPHP waits without end for a script that
+     * still reads the body of a client that keeps its connection open, and `proc_close()` with it.
+     *
+     * @param  resource  $process
+     */
+    private function kill(mixed $process): void
+    {
+        proc_terminate($process, 9);
+        proc_close($process);
+    }
+
+    /**
      * The port of FrankenPHP with the php.ini, the app, and the options of the server and of the
      * site in the Caddyfile, started on the first call.
      *
@@ -250,8 +261,7 @@ final class FrankenPhpReference
         // The fuzz test takes limits at random; a server for each would hold hundreds of threads.
         if (count($this->servers) >= 8) {
             [$process] = array_shift($this->servers);
-            proc_terminate($process);
-            proc_close($process);
+            $this->kill($process);
         }
 
         $free = stream_socket_server('tcp://127.0.0.1:0');
