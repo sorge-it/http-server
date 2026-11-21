@@ -96,11 +96,24 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: composer frankenphp:install
 
-      # The example of the README runs with the Chrome of the runner image.
+      # The example of the README runs with the Chrome of the runner image. The steps of `composer
+      # test`, with an event log: the macOS job hung twice, and its output names no test.
       - name: Test
+        timeout-minutes: 10
         env:
           CHROME: ${{ matrix.chrome }}
-        run: composer test
+        run: |
+          composer test:lint
+          composer test:types
+          composer test:type-coverage
+          vendor/bin/pest --log-events-text "$RUNNER_TEMP/events.txt"
+
+      # The step limit leaves time for this: the last test that started, and what still runs.
+      - name: Show where the tests stopped
+        if: failure()
+        run: |
+          grep -E 'Test (Prepared|Finished)' "$RUNNER_TEMP/events.txt" | tail -n 6 || true
+          ps -A -o pid,ppid,etime,command | awk '/frankenphp|http-server-go|pest|Chrome/ && !/awk/'
 
   package:
     name: Package
