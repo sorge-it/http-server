@@ -103,8 +103,7 @@ final class Release
      */
     public static function digests(string $version): array
     {
-        $token = getenv('GITHUB_TOKEN');
-        $release = json_decode(self::load('https://api.github.com/repos/php/frankenphp/releases/tags/'.$version, ['Accept: application/vnd.github+json', 'User-Agent: sorge-it/http-server', ...(is_string($token) && $token !== '' ? ['Authorization: Bearer '.$token] : [])]), true, flags: JSON_THROW_ON_ERROR);
+        $release = self::api('releases/tags/'.$version);
         $sha256 = [];
 
         foreach (is_array($release) && is_array($release['assets'] ?? null) ? $release['assets'] : [] as $asset) {
@@ -116,6 +115,17 @@ final class Release
         ksort($sha256);
 
         return $sha256;
+    }
+
+    /**
+     * The tag of the newest release, such as `v1.13.6`. Not the newest tag: upstream tags a version
+     * and publishes its release hours later.
+     */
+    public static function newest(): string
+    {
+        $release = self::api('releases/latest');
+
+        return is_array($release) && is_string($release['tag_name'] ?? null) ? $release['tag_name'] : throw new RuntimeException('The API of GitHub names no newest release of FrankenPHP.');
     }
 
     /**
@@ -135,6 +145,17 @@ final class Release
 
         chmod($part, 0o755);
         rename($part, $file);
+    }
+
+    /**
+     * The JSON of the path below the repository of FrankenPHP in the API of GitHub. A
+     * `GITHUB_TOKEN` raises the limit of 60 calls in an hour, but no call needs it.
+     */
+    private static function api(string $path): mixed
+    {
+        $token = getenv('GITHUB_TOKEN');
+
+        return json_decode(self::load('https://api.github.com/repos/php/frankenphp/'.$path, ['Accept: application/vnd.github+json', 'User-Agent: sorge-it/http-server', ...(is_string($token) && $token !== '' ? ['Authorization: Bearer '.$token] : [])]), true, flags: JSON_THROW_ON_ERROR);
     }
 
     /**

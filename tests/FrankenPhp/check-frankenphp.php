@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // composer check:frankenphp compares frankenphp.lock, release.lock and php-src.lock with the newest
-// FrankenPHP, a tag vX.Y.Z. A difference does not stop the next comparison. Its binary for this
+// release of FrankenPHP. A difference does not stop the next comparison. Its binary for this
 // machine stays in .frankenphp/newest; the output `binary` names it for a workflow.
 
 use SorgeIt\HttpServer\Tests\FrankenPhp\Release;
@@ -13,7 +13,7 @@ require __DIR__.'/../../vendor/autoload.php';
 
 const FRANKENPHP = 'https://github.com/php/frankenphp.git';
 
-$tag = Upstream::newestTag(FRANKENPHP, '/^v1\.\d+\.\d+$/');
+$tag = Release::newest();
 echo 'Newest FrankenPHP: '.$tag.PHP_EOL;
 $same = Upstream::locks(__DIR__.'/../Fixtures/frankenphp/frankenphp.lock', FRANKENPHP, $tag);
 
