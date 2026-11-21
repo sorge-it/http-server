@@ -24,7 +24,7 @@ final class ClosedWithErrors extends LogicException
     public function __construct(public readonly array $errors, Request $request)
     {
         parent::__construct(sprintf(
-            'The server closed with %d %s that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler; only a test that expects the error passes onError to the Server. The first, from %s %s: %s',
+            'The server closed with %d %s that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler, or let each request finish before close(). To fail the test at the error instead of at close(), pass onError: static fn (Throwable $e): never => throw $e; a test that expects the error passes an onError that records it. The first, from %s %s: %s',
             count($errors),
             count($errors) === 1 ? 'error' : 'errors',
             $request->method,

@@ -163,7 +163,7 @@ it('throws ClosedWithErrors from close() without onError for a body that the clo
         expect(converse($server, $client, "PUT /upload?x=1 HTTP/1.1\r\nHost: a\r\nContent-Length: 10\r\n\r\nabc"))->toBe('')
             ->and(closedWithErrors($server))->toBe([
                 ['LogicException: The server closed before the body was complete, with 3 of 10 bytes read', 'RuntimeException: read abc'],
-                'The server closed with 2 errors that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler; only a test that expects the error passes onError to the Server. The first, from PUT /upload?x=1: The server closed before the body was complete, with 3 of 10 bytes read',
+                'The server closed with 2 errors that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler, or let each request finish before close(). To fail the test at the error instead of at close(), pass onError: static fn (Throwable $e): never => throw $e; a test that expects the error passes an onError that records it. The first, from PUT /upload?x=1: The server closed before the body was complete, with 3 of 10 bytes read',
                 true,
             ])
             ->and($server->streams())->toBe([[], []])
@@ -183,7 +183,7 @@ it('throws ClosedWithErrors from close() for a body that the server drops after 
         expect(converse($server, $client, "POST /early HTTP/1.1\r\nHost: a\r\nContent-Length: 10\r\n\r\nabc"))->toBe('')
             ->and(closedWithErrors($server))->toBe([
                 ['LogicException: The server closed before the body was complete, with 3 of 10 bytes read'],
-                'The server closed with 1 error that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler; only a test that expects the error passes onError to the Server. The first, from POST /early: The server closed before the body was complete, with 3 of 10 bytes read',
+                'The server closed with 1 error that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler, or let each request finish before close(). To fail the test at the error instead of at close(), pass onError: static fn (Throwable $e): never => throw $e; a test that expects the error passes an onError that records it. The first, from POST /early: The server closed before the body was complete, with 3 of 10 bytes read',
                 true,
             ]);
     } finally {
@@ -211,7 +211,7 @@ it('gives a LogicException to a handler that a close() resumes and that calls ti
         expect(converse($server, $client, "PUT /upload HTTP/1.1\r\nHost: a\r\nContent-Length: 10\r\n\r\nabc"))->toBe('')
             ->and(closedWithErrors($server))->toBe([
                 ['LogicException: The server closed before the body was complete, with 3 of 10 bytes read'],
-                'The server closed with 1 error that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler; only a test that expects the error passes onError to the Server. The first, from PUT /upload: The server closed before the body was complete, with 3 of 10 bytes read',
+                'The server closed with 1 error that no onError callback received; ClosedWithErrors::$errors lists each one. Fix the handler, or let each request finish before close(). To fail the test at the error instead of at close(), pass onError: static fn (Throwable $e): never => throw $e; a test that expects the error passes an onError that records it. The first, from PUT /upload: The server closed before the body was complete, with 3 of 10 bytes read',
                 true,
             ])
             ->and($caught)->toStartWith('LogicException: '.$message);
