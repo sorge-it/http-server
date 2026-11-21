@@ -10,6 +10,10 @@ All notable changes to this package are in this file. The format follows
 
 - `SECURITY.md` moved to `.github/` and is no longer in the package. The security link in
   `composer.json` points to the security policy on GitHub.
+- Three messages name the fix. A handler that gives another type than `Response` names the full
+  class and the section "Works with Symfony, Laravel and PSR-15". `ClosedWithErrors` says to fix
+  the handler first. A `$host` with a port or a scheme, such as `127.0.0.1:8080`, throws
+  `ListenFailed` at once and names `$port`, instead of an error of the resolver.
 
 ### Fixed
 

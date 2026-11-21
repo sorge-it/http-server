@@ -92,6 +92,12 @@ final class Server
         } : $onError(...), $limits);
         $this->clock = new Clock;
 
+        // A colon is part of an IPv6 address, which may name its zone after `%`, or of a port or a
+        // scheme, which the resolver would report as an unknown name.
+        if (str_contains($host, '/') || (str_contains($host, ':') && filter_var((string) preg_replace('/%.*$/sD', '', trim($host, '[]')), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false)) {
+            throw new ListenFailed(sprintf('The server takes a name or an IP address as $host, without a scheme or a port, not %s. Pass the port as $port.', $host));
+        }
+
         if (str_contains($host, ':') && ! str_starts_with($host, '[')) {
             $host = '['.$host.']';
         }

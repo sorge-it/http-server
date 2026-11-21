@@ -143,6 +143,29 @@ it('refuses an address that is not loopback with ListenFailed before it binds th
     'IPv4 in the IPv6 form' => ['::ffff:127.0.0.1', '[::ffff:127.0.0.1]'],
 ]);
 
+it('refuses a host with a port or a scheme, and names $port as the way out', function (string $host): void {
+    expect(fn (): Server => new Server(static fn (): Response => new Response, $host))
+        ->toThrow(ListenFailed::class, 'The server takes a name or an IP address as $host, without a scheme or a port, not '.$host.'. Pass the port as $port.');
+})->with([
+    'IPv4 and port' => ['127.0.0.1:8080'],
+    'name and port' => ['localhost:8080'],
+    'scheme' => ['http://127.0.0.1'],
+    'IPv6 in brackets and port' => ['[::1]:8080'],
+]);
+
+it('takes an IPv6 address with a zone as an address, not as a host with a port', function (): void {
+    // macOS binds ::1 and drops the zone that no interface has; Linux fails to resolve it.
+    $message = '';
+
+    try {
+        new Server(static fn (): Response => new Response, '::1%nozone')->close();
+    } catch (ListenFailed $listenFailed) {
+        $message = $listenFailed->getMessage();
+    }
+
+    expect($message)->not->toContain('without a scheme or a port');
+});
+
 it('names the address it could not bind', function (): void {
     expect(fn (): Server => new Server(static fn (): Response => new Response, '2001:db8::1'))
         ->toThrow(ListenFailed::class, 'The server could not bind [2001:db8::1]: ');
