@@ -40,7 +40,7 @@ return [
         'none' => 'The server measures time of its own. No pattern tells a copy of the reference from its own timing.',
     ],
     [
-        'row' => 'The exact place of a limit',
+        'row' => 'The exact byte at which a limit applies',
         'absent' => [
             '/\+\s*4096\b/' => '$left = $this->maxHead + 4096;',
             '/\+=\s*4096\b/' => '$left += 4096;',

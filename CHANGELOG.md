@@ -6,26 +6,32 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-21
+
 ### Changed
 
-- Four more messages name the way out: `ClosedWithErrors` names a request cut by `close()` and the
-  `onError` that fails the test at the error; a chunk that is not a string names `json_encode()`; a handler that returns `null`
-  is told to return a `Response` from every path; a host that is not loopback names where the
-  browser runs.
-
+- For a name such as `localhost`, the server listens on the address that its loopback check
+  resolved the name to. When the port is taken there, `new Server()` throws `ListenFailed` instead
+  of trying the next address.
+- For a `$host` with a port or a scheme, such as `127.0.0.1:8080`, `new Server()` throws
+  `ListenFailed` at once and names `$port`, instead of passing on an error of the resolver. For a
+  host that cannot be bound, the message of `ListenFailed` contains "could not bind".
+- Error messages name the way out:
+  - a handler that returns `null`: return a `Response` from every path;
+  - a handler that returns another value: the fully qualified `Response` class and the README
+    section "Works with Symfony, Laravel and PSR-15";
+  - `ClosedWithErrors`: fix the handler or let each request finish before `close()`, and the
+    `onError` that fails the test at the error;
+  - a chunk of a streamed body that is not a string: `json_encode()` for JSON;
+  - a host that is not loopback: run the browser on the same host or in the same container.
 - `SECURITY.md` moved to `.github/` and is no longer in the package. The security link in
   `composer.json` points to the security policy on GitHub.
-- Three messages name the fix. A handler that gives another type than `Response` names the full
-  class and the section "Works with Symfony, Laravel and PSR-15". `ClosedWithErrors` says to fix
-  the handler first. A `$host` with a port or a scheme, such as `127.0.0.1:8080`, throws
-  `ListenFailed` at once and names `$port`, instead of an error of the resolver.
 
 ### Fixed
 
 - `new Server()` refuses a host that resolves to an address that is not loopback, such as
-  `0.0.0.0` or `0`, before it listens. Until now it listened on the address for a moment and then
-  refused it. A host that cannot be bound now throws `ListenFailed` with "could not bind". A name
-  such as `localhost` now listens only on the first address it resolves to.
+  `0.0.0.0` or `0`, before it listens. Previously, it listened on the address for a moment and
+  then refused it.
 
 ## [1.0.0] - 2026-11-20
 
@@ -38,5 +44,6 @@ response with the FrankenPHP binary, in the form that Chrome receives, and the p
 `net/http`. The README states the scope and each deliberate difference. The 0.x releases were
 private.
 
-[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/sorge-it/http-server/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sorge-it/http-server/releases/tag/v1.0.0

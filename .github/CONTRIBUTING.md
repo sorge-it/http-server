@@ -9,8 +9,7 @@ Everyone who takes part follows the
 ## Setup
 
 You need Composer, PHP 8.4 or a later 8.x with the `sockets`, `pdo_sqlite` and `curl` extensions,
-and pcov or Xdebug for line coverage. The two browser examples also need Chrome; see the `Example`
-suite below.
+and pcov or Xdebug for line coverage. The two browser tests also need Chrome; see [Tests](#tests).
 
 ```sh
 composer install
@@ -39,8 +38,9 @@ composer test                # Pint and Rector dry runs, PHPStan, 100% type cove
 Before you open a pull request:
 
 ```sh
-composer test:coverage      # 100% line coverage, needs pcov or Xdebug
 composer lint               # Rector, then Pint
+composer test               # the dry runs of both, PHPStan, 100% type coverage, every suite
+composer test:coverage      # 100% line coverage, needs pcov or Xdebug
 composer validate --strict  # composer.json against its schema
 composer audit --locked     # advisories for the locked packages, needs the network
 ```
@@ -50,7 +50,7 @@ PHPStan, Rector and the type coverage read `src` and `tests`; Pint reads the who
 The code must run on PHP 8.4 and 8.5, on macOS, and on Linux with glibc and with musl. The Docker
 jobs in CI run the suites as a non-root user, so that the file-mode tests run. To run
 such a job locally, use a clean clone, because the command copies the whole directory. Use `debian`
-or `alpine` as the image name:
+or `alpine` as the directory in `.github/docker/`:
 
 ```sh
 docker build --quiet --tag tests .github/docker/debian
@@ -81,9 +81,10 @@ docker run --rm --volume "$PWD:/src:ro" --workdir /src actionlint -no-color
 
 - Where Go `net/http` decides the result, the test is a probe in
   `tests/Fixtures/go-net-http/cases.json`, with the fields `group`, `name`, `source: "probe"`,
-  `rule` (Go's file and function) and `request`, and the limits `maxHeaderBytes` or
-  `maxHeaderValueCount` where needed. Then run `composer go:extract`. The `GoNetHttp` suite sends
-  the probe to Go for the parser and to FrankenPHP for the response, and compares the bytes.
+  `rule` (Go's file and function) and `request`, and the limits `maxHeaderBytes`,
+  `maxHeaderValueCount` or `maxBody` where needed. Then run `composer go:extract`. The `GoNetHttp`
+  suite sends the probe to Go for the parser and to FrankenPHP for the response, and compares the
+  bytes.
 - Where Caddy decides, the probe goes into `tests/Fixtures/caddy/cases.json` in the same form, with
   Caddy's file and function as `rule`, and the `FrankenPhp` suite compares it against FrankenPHP.
 - No test spells out a FrankenPHP response as a literal. Where the handler must be PHP, compare
@@ -139,12 +140,12 @@ composer frankenphp:lock   # new FrankenPHP versions into release.lock, needs gh
 - The newest FrankenPHP is its newest release, not its newest tag: upstream tags a version and
   publishes the release hours later.
 - `check:frankenphp` downloads the newest FrankenPHP binary into `.frankenphp/newest` and runs it.
-  When it finds new versions, run `composer frankenphp:lock`. It writes the versions of the newest
+  When it finds new versions, run `composer frankenphp:lock`. `frankenphp:lock` writes the versions of the newest
   binary into `release.lock` after `gh attestation verify` shows that FrankenPHP's workflow built
   each binary. If the versions are unchanged, it writes nothing.
 - Then update each lock file that the `pins` group test in `tests/FrankenPhp/FrankenPhpTest.php`
-  reads, each version that it names, and the tags in `tests/Fixtures/README.md`. The README names
-  no pinned version.
+  reads, each version that it names, and the tags in `tests/Fixtures/README.md`. The root README
+  names no pinned version.
 
 ## Scope
 

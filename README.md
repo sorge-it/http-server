@@ -1,4 +1,4 @@
-# HttpServer: an in-process HTTP server for Pest and PHPUnit browser tests, built for coding agents
+# HttpServer: an in-process HTTP/1.1 server for Pest and PHPUnit browser tests, built for coding agents
 
 [![Tests](https://github.com/sorge-it/http-server/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/sorge-it/http-server/actions/workflows/tests.yml?query=branch%3Amain)
 [![Latest FrankenPHP](https://github.com/sorge-it/http-server/actions/workflows/frankenphp.yml/badge.svg?branch=main)](https://github.com/sorge-it/http-server/actions/workflows/frankenphp.yml?query=branch%3Amain)
@@ -15,7 +15,7 @@ for coding agents. It serves the page from the test process, so the page sees th
 
 ![A test holds a database transaction with the user Ada. Headless Chromium loads the users page: served by php -S in a second process, it shows no users; served by HttpServer in the test process, it shows Ada](https://raw.githubusercontent.com/sorge-it/http-server/main/demo/output/demo.gif)
 
-The demo in [`demo/`](demo) holds a transaction with the user Ada, as Laravel's `RefreshDatabase`
+The demo in [`demo/`](https://github.com/sorge-it/http-server/tree/main/demo) holds a transaction with the user Ada, as Laravel's `RefreshDatabase`
 does, while headless Chromium loads a page that lists the users. Served by `php -S`, the page shows
 no users; served by HttpServer, it shows Ada.
 
@@ -23,12 +23,13 @@ no users; served by HttpServer, it shows Ada.
   [`sorge-it/pest-plugin-browser-cdp`](https://github.com/sorge-it/pest-plugin-browser-cdp) serves
   your app with it, so `RefreshDatabase`, `actingAs()` and fakes such as `Mail::fake()` reach the
   page.
-- **Already using `pestphp/pest-plugin-browser`?** There, the page sees the test's state too.
+- **Already using `pestphp/pest-plugin-browser`?** With it, the page sees the test's state too.
   [`pest-plugin-browser-cdp`](https://github.com/sorge-it/pest-plugin-browser-cdp) runs your tests
-  on HttpServer instead, without Node and Playwright. For the methods that its README marks `built`,
-  it is [faster and uses half the
-  memory](https://github.com/sorge-it/pest-plugin-browser-cdp#measurements).
-- **Testing another framework or plain PHP, or building a browser driver or test harness?** Read on:
+  on HttpServer instead, without Node and Playwright, if they use only the methods that its README
+  marks `built`. In its demo, it ran faster than `pest-plugin-browser` and used half the memory
+  ([measurements](https://github.com/sorge-it/pest-plugin-browser-cdp#measurements)).
+- **Testing Laravel with PHPUnit, another framework or plain PHP, or building a browser driver or
+  test harness?** Read on:
   the handler is a callable that turns a `Request` into a `Response`.
   [Works with Symfony, Laravel and PSR-15](#works-with-symfony-laravel-and-psr-15) has a handler
   for each.
@@ -65,8 +66,7 @@ requires 100% line and type coverage, and the weekly mutation tests require a sc
 17. [License](#license)
 18. [About the author](#about-the-author)
 
-Sections 1 to 11 are for users. Sections 12 to 14 are the reference: read them when you need a
-detail.
+Sections 1 to 11 are for users. Sections 12 to 14 are for looking up the details.
 
 ## Why RefreshDatabase and actingAs() don't reach the page
 
@@ -97,17 +97,17 @@ HttpServer makes both safe:
   [Compatibility](#compatibility-with-frankenphp).
 - **The test shows the error.** With `onError: static fn (Throwable $e): never => throw $e`, a
   handler exception fails the test with its class, message, file and line
-  ([test](tests/Handler/HandlerTest.php)). Laravel and Symfony catch the exceptions of their app
+  ([test](https://github.com/sorge-it/http-server/blob/main/tests/Handler/HandlerTest.php)). Laravel and Symfony catch the exceptions of their app
   first; see [Works with](#works-with-symfony-laravel-and-psr-15). Under `php -S` without a
   php.ini, the exception stays in the server process: the test gets status 200 and an HTML page
   with the fatal error (measured by hand on 2026-11-16; no suite repeats it).
 - **Debug output is in the run.** `echo` and `var_dump()` in the app print into the test's output,
   as in a unit test, and `error_log()` writes where the test process logs
-  ([test](tests/BeyondGo/SharedStateTest.php)). The response body stays as the handler returned it.
+  ([test](https://github.com/sorge-it/http-server/blob/main/tests/BeyondGo/SharedStateTest.php)). The response body stays as the handler returned it.
 - **No server process.** There is no server process to start, to wait for or to kill, and none is
   left after a failed run.
 - **The test sees what the page did.** After a request, the test reads the same database
-  transaction and the same fakes as the app ([test](works-with/laravel/WorksWithTest.php)).
+  transaction and the same fakes as the app ([test](https://github.com/sorge-it/http-server/blob/main/works-with/laravel/WorksWithTest.php)).
 
 ## Installation
 
@@ -115,16 +115,16 @@ HttpServer makes both safe:
 composer require --dev sorge-it/http-server
 ```
 
-It requires PHP 8.4 or a later 8.x, the extension `ext-filter`, which PHP builds by default, and
-no other packages. It runs on Linux and macOS: CI runs the suites on Ubuntu, Debian, Alpine and
+It requires PHP 8.4 or a later 8.x, the `filter` extension, which PHP enables by default, and no
+other packages. It runs on Linux and macOS: CI runs the suites on Ubuntu, Debian, Alpine and
 macOS. Windows is not supported, because no CI job runs there.
 Versions follow [Semantic Versioning](https://semver.org): the classes and the interface marked
 `@api` are the public API, and [CHANGELOG.md](CHANGELOG.md) lists each change.
 
 ## Quick start
 
-Save this as `serve.php` in the project root, run `php serve.php`, and open the URL it prints
-within 60 seconds:
+Save this as `serve.php` in the project root, run `php serve.php`, and within 60 seconds open the
+URL that it prints:
 
 ```php
 <?php
@@ -180,7 +180,8 @@ When you run as root, such as in a container, run `deps` without `sudo`; `pin` a
 take `--allow-root`. On Linux, the pinned Chrome runs on glibc only. On Alpine, run only `deps`,
 which installs Chromium, and set `CHROME=/usr/bin/chromium`.
 
-Save the test as `tests/ChromeTest.php`. It needs the `pdo_sqlite` extension:
+Save the test as `tests/ChromeTest.php`, or in a directory that your `phpunit.xml` runs, such as
+`tests/Feature` in a Laravel app. It needs the `pdo_sqlite` extension:
 
 ```php
 <?php
@@ -249,15 +250,17 @@ CHROME="$(vendor/bin/cdp-browser path chrome-headless-shell)" vendor/bin/pest te
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" vendor/bin/pest tests/ChromeTest.php
 ```
 
-- The suite runs this example as [`tests/Example/ChromeTest.php`](tests/Example/ChromeTest.php), in
+- The suite runs this example as [`tests/Example/ChromeTest.php`](https://github.com/sorge-it/http-server/blob/main/tests/Example/ChromeTest.php), in
   CI on Ubuntu and macOS.
 - In PHPUnit, the same code goes into a test method, with `assertStringContainsString()` instead of
   `expect()`.
 - On Linux, the test passes `--no-sandbox`: current Ubuntu releases and most containers block the
-  sandbox, and Chrome then stops with `No usable sandbox!`. Chrome's errors go to the test's output.
+  sandbox, and Chrome then stops with `No usable sandbox!`. Chrome's messages go to the test's
+  output; its `ERROR` lines, such as the `dbus` and GPU errors in a container, do not fail the test.
 - `--dump-dom` loads one page and prints its DOM. A navigation started by a script may not appear
   in the dump. To click on the page, a driver speaks the Chrome DevTools Protocol, as
-  `pest-plugin-browser-cdp` does.
+  `pest-plugin-browser-cdp` does, and waits for its socket and the server's in one loop; see
+  [A driver's wait loop](#a-drivers-wait-loop).
 
 ### Waiting for a request
 
@@ -328,7 +331,7 @@ it('receives the form that Chrome submits', function (): void {
   does.
 - Call `tick()` with a wait, such as `tick(0.01)`. `tick(0)` returns immediately, and a loop of it
   keeps a CPU core busy.
-- The suite runs this example as [`tests/Example/FormTest.php`](tests/Example/FormTest.php).
+- The suite runs this example as [`tests/Example/FormTest.php`](https://github.com/sorge-it/http-server/blob/main/tests/Example/FormTest.php).
 
 ## A driver's wait loop
 
@@ -375,7 +378,7 @@ $server->close();
 
 A handler is a plain callable, so a unit test calls it without a server, a socket or a browser.
 `StringBody` gives the request a body; a `Request` without one has an empty body. The test checks
-the `Response` by its public properties:
+the `Response` by its public properties. Save it as `tests/UnitTest.php`:
 
 ```php
 <?php
@@ -417,14 +420,14 @@ file:
   a branch in the handler.
 - leaves an exception from the app to the framework. Laravel, and Symfony with `FrameworkBundle`,
   answer with their error page, so `onError` gets no exception. In a Laravel test,
-  `$this->withoutExceptionHandling([NotFoundHttpException::class])` turns this off: each exception
-  from the app reaches `onError`, except a class in the list. So a missing route, such as
+  `$this->withoutExceptionHandling([NotFoundHttpException::class])` turns this off: every exception
+  from the app reaches `onError`, unless its class is in the list. So a missing route, such as
   `/favicon.ico`, still gets its 404. A form that fails validation throws a `ValidationException`:
   add its class to the list when the test expects the framework's response. In a Symfony test,
   `catch: false` in the call of `handle()` in `symfonyHandler()` passes each exception from the app
-  to `onError`, also the `NotFoundHttpException` of `/favicon.ico`.
+  to `onError`, including the `NotFoundHttpException` of `/favicon.ico`.
 
-The weekly CI job [`works-with`](.github/workflows/works-with.yml) runs each file with the newest
+The weekly CI job [`works-with`](https://github.com/sorge-it/http-server/blob/main/.github/workflows/works-with.yml) runs each file with the newest
 release of its framework. A client in a second process posts a form with a query, a cookie and a
 header. The app answers with status 201, a header and two cookies; Symfony and Laravel answer
 with a `StreamedResponse`.
@@ -659,7 +662,8 @@ the test process that ticks the server while it waits.
 
 Do not use it for:
 
-- Laravel Dusk, Symfony Panther or any other WebDriver client: they block the test process;
+- Laravel Dusk, Symfony Panther or any other WebDriver client, and a Chrome DevTools Protocol client
+  that waits synchronously, such as `chrome-php/chrome`: they block the test process;
 - a mock server for your own HTTP client, such as Guzzle or Symfony HttpClient: they block the
   process while the server needs a tick. Use Guzzle's `MockHandler`, Laravel's `Http::fake()` or
   Symfony's `MockHttpClient` instead;
@@ -675,11 +679,11 @@ Do not use it for:
 | | `php -S`, `php artisan serve` | `amphp/http-server` 3.4.9, used by `pestphp/pest-plugin-browser` 5.2.0 | `react/http` 1.12.0 | `sorge-it/http-server` | Source |
 |---|---|---|---|---|---|
 | Runs in | a second process | the test process | the test process | the test process | [PHP manual](https://www.php.net/manual/en/features.commandline.webserver.php), [ServeCommand.php of Laravel 13.43.0](https://github.com/laravel/framework/blob/v13.43.0/src/Illuminate/Foundation/Console/ServeCommand.php), [LaravelHttpServer.php of pest-plugin-browser 5.2.0](https://github.com/pestphp/pest-plugin-browser/blob/v5.2.0/src/Drivers/LaravelHttpServer.php), [README of react/http 1.12.0](https://github.com/reactphp/http/blob/v1.12.0/README.md#server-usage) |
-| The page can see the test's transaction, authenticated user and fakes | no | yes | yes | yes | the [demo](demo) for `php -S`; for the others, the handler runs in the test process |
+| The page can see the test's transaction, authenticated user and fakes | no | yes | yes | yes | the [demo](https://github.com/sorge-it/http-server/tree/main/demo) for `php -S`; for the others, the handler runs in the test process |
 | Event loop | none needed by the test | Revolt, with fibers | ReactPHP's loop | none: the test calls `tick()` | [composer.json of amphp/http-server 3.4.9](https://github.com/amphp/http-server/blob/v3.4.9/composer.json), [composer.json of react/http 1.12.0](https://github.com/reactphp/http/blob/v1.12.0/composer.json) |
-| Direct dependencies | none for `php -S`, part of PHP; `php artisan serve` is part of `laravel/framework` and starts `php -S` | 13 | 7 | no packages; `ext-filter` of PHP | the same two files |
+| Direct dependencies | none for `php -S`, part of PHP; `php artisan serve` is part of `laravel/framework` and starts `php -S` | 13 | 7 | no packages; PHP's `filter` extension | the same two files |
 | TLS and HTTP/2 | no | TLS and HTTP/2 | TLS, no HTTP/2 | no: HTTP/1.1 on loopback only | [php_cli_server.c of PHP 8.4](https://github.com/php/php-src/blob/php-8.4.0/sapi/cli/php_cli_server.c), [README of amphp/http-server 3.4.9](https://github.com/amphp/http-server/blob/v3.4.9/README.md), [README of react/http 1.12.0](https://github.com/reactphp/http/blob/v1.12.0/README.md) |
-| Built for | development and testing, not a public network | application servers | event-driven applications | browser tests on loopback | the PHP manual and the two READMEs |
+| What it is | a server for development and testing, not for a public network | an HTTP/1.1 and HTTP/2 application server | a server for ReactPHP's event loop | a server for browser tests on loopback | the PHP manual and the two READMEs |
 
 HttpServer follows one server, the pinned official FrankenPHP build over HTTP, and its suites
 compare the response to each valid request with it.
@@ -713,7 +717,7 @@ class lives in the namespace `SorgeIt\HttpServer\Internal` and can change in any
 | `new Response(int $status = 200, array $headers = [], string\|iterable $body = '', ?string $file = null, bool $deleteFile = false)` | a response. `$headers` maps a name to a string or a list of strings. `$body` is a string, or an iterable of strings that the server streams as they come. `$file` sends a file instead of a body. A redirect needs its status, such as `new Response(303, ['Location' => '/done'])`; status 0 sets none, and then a `Location` gives 302, as in PHP. A status outside 100 to 999 becomes 500 | `ValueError` for a header value that is not a string, an integer header key, or a body and a file together |
 | `Response::$status`, `$headers`, `$body`, `$file`, `$deleteFile` | the constructor arguments, as public readonly properties, for a test that checks a handler's response | none |
 | `new Limits(?int $maxHead = null, ?int $maxBody = null, ?float $idleTimeout = null, ?float $headerTimeout = null)` | the limits and timeouts; name the arguments, such as `new Limits(maxBody: 1024)`. Null selects the default, 0 turns a limit off. Defaults: `maxHead` 16 KiB, `maxBody` none, `idleTimeout` 120 s, `headerTimeout` 10 s; see [Limits and timeouts](#limits-and-timeouts) | `ValueError` for a negative value, or a timeout that is not finite or above 1e8 s |
-| `ClosedWithErrors::$errors` | the list of `Throwable` that no `onError` received; the first is also the previous exception | none |
+| `ClosedWithErrors::$errors` | the list of `Throwable`s that no `onError` received; the first is also the previous exception | none |
 
 ### The request body
 
@@ -731,8 +735,8 @@ $request->body->error() === null || throw new RuntimeException($request->body->e
 parse_str($form, $fields); // for application/x-www-form-urlencoded; a multipart body needs a parser of its own
 ```
 
-The rules below follow how Go `net/http` handles `Request.Body`, with exceptions of the
-server's own, each marked "(not in Go)". The `GoNetHttp` suite has these cases in its group
+The rules below follow how Go `net/http` handles `Request.Body`. Each point marked "(not in Go)"
+is the server's own. The `GoNetHttp` suite has these cases in its group
 `handler`. [How a connection ends](#how-a-connection-ends) covers the unread remainder of a body and
 a truncated body.
 
@@ -853,10 +857,11 @@ the [scope](#scope) states a rule of the scope. Each point marked "(not in Go)" 
 Every other point describes what Go `net/http` does, and the `GoNetHttp` suite has a case
 for it. Caddy and the PHP SAPI change the request and the response (see
 [Layers](#layers-who-decides-what)), so the suite compares the responses with FrankenPHP. Some
-points, such as the exact place of a limit, are out of scope; this section describes them as the
-server handles them today.
+behavior, such as the exact byte at which a limit applies, is out of scope; this section describes
+it as the server handles it today.
 
-The reference differs from RFC 9110 and RFC 9112 in three points, and the server follows it:
+FrankenPHP, the reference (see [Scope](#scope)), differs from RFC 9110 and RFC 9112 in four
+points, and the server follows it:
 
 - A request line longer than `maxHead` gets 431. RFC 9112 section 3 names 414 for a request target
   that is too long. Go counts the request line in `MaxHeaderBytes`.
@@ -865,6 +870,7 @@ The reference differs from RFC 9110 and RFC 9112 in three points, and the server
 - A method longer than 32 bytes gets Caddy's 405, without `Allow`. RFC 9112 section 3 names 501
   for a method longer than any the server implements, and RFC 9110 section 15.5.6 requires `Allow`
   in a 405.
+- A 205 sends the handler's body. RFC 9110 section 15.3.6 forbids content in a 205. Go sends it.
 
 ### A valid request
 
@@ -913,14 +919,15 @@ The server also sends the 400 for an incomplete request:
 
 ### What the server reads
 
-- HTTP/1.1, keep-alive, more than one request in one packet (pipelining), and a request spread over
+- HTTP/1.1, keep-alive, more than one request before the first response (pipelining), several
+  requests in one packet, and a request spread over
   many packets. The result is the same whether the bytes arrive whole or one at a time. This also
   applies at each limit.
 - `maxHead` counts the header section to the byte: the request line, the fields, each with its
   CRLF, and the empty line. A header section of exactly `maxHead` bytes is accepted; one byte more
   is rejected with 431, even before the end of the header section arrives. Go reads more than
   `MaxHeaderBytes`, so FrankenPHP accepts a header section of up to 20,494 bytes; the exact
-  place of a limit is out of [scope](#scope).
+  byte at which a limit applies is out of [scope](#scope).
 - A field value is stripped of surrounding spaces and tabs. A header section can have 500 field
   values, matching Go's `DefaultMaxHeaderValueCount`; more are rejected with 431.
 - The server parses the request target as Go's `url.ParseRequestURI` does, and decodes no part of
@@ -951,8 +958,8 @@ A negative value, or a timeout that is not finite or above 1e8 s, throws a `Valu
 
 #### The default timeouts
 
-The reference is Caddy over HTTP. It uses the default server settings except for two
-timeouts, as in the site block `http://127.0.0.1:8080 { php_server }` with
+The defaults follow Caddy over HTTP, as FrankenPHP runs it. Apart from two timeouts, Caddy runs
+with its default server settings, as in the site block `http://127.0.0.1:8080 { php_server }` with
 `servers { timeouts { read_header 10s idle 2m } }`. The two timeouts come from a production
 FrankenPHP site behind a TLS proxy, measured by hand on 2026-11-02; no suite repeats the
 measurement. A connection without a request, and one with a partial header section, closed after
@@ -983,10 +990,10 @@ Caddy's timeouts for each read and write (`ReadIdleTimeout` and `WriteIdleTimeou
   still gets the responses to all the requests it sent before, including those with a large file.
 - Once the handler has returned, the server reads and discards the unread remainder of the request
   body before it writes the response. This applies to every remainder, including one from a
-  request that closes the connection. This way the server sees every truncated body, as the
-  [scope](#scope) requires. Go differs; see [Deliberate differences](#deliberate-differences).
+  request that closes the connection. This way the server sees every truncated body, as
+  [A valid request](#a-valid-request) requires. Go differs; see [Deliberate differences](#deliberate-differences).
 - A truncated body, one that a half-close by the client ended before its full length, makes the
-  request not valid; see [Scope](#scope). The handler gets the error; see
+  request not valid; see [A valid request](#a-valid-request). The handler gets the error; see
   [The request body](#the-request-body). Then the server drops the response, sends the 400, and
   closes.
 - No timeout runs while the server writes responses. Go also has no `WriteTimeout` by default.
@@ -1077,7 +1084,7 @@ adds its own headers, such as `Content-Type`, `X-Powered-By` and Caddy's `Server
 ## Compatibility with FrankenPHP
 
 HttpServer follows the FrankenPHP build that
-[`release.lock`](tests/Fixtures/frankenphp/release.lock) pins, one layer at a time. Go `net/http`
+[`release.lock`](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/frankenphp/release.lock) pins, one layer at a time. Go `net/http`
 parses the request and frames the response, Caddy adds its checks and defaults, and the PHP SAPI
 sets the script's status and headers, using the test process's php.ini. The `GoNetHttp` suite checks
 the parser against a Go `net/http` server; the `GoNetHttp` and `FrankenPhp` suites compare each byte
@@ -1102,7 +1109,7 @@ Chrome sends such a path unchanged, and the reference rejects it with the same 4
 [A valid request](#a-valid-request) states the exact rule. The rule is written by hand: no suite
 compares it live against Chrome, because such a suite would add too much complexity. The
 `FrankenPhp` suite applies the rule to the requests Chrome sent, recorded in
-[`chrome/`](tests/Fixtures/chrome): each one is valid except the one with an invalid
+[`chrome/`](https://github.com/sorge-it/http-server/tree/main/tests/Fixtures/chrome): each one is valid except the one with an invalid
 percent-encoding.
 
 The server detects any request that is not valid and rejects it. Its response does not depend on
@@ -1128,7 +1135,7 @@ This question decides whether a behavior is in scope:
 | The trailers of a response. Chrome drops them, and `fetch` has no API for them | out |
 | How the reference uses memory | out |
 | Timing that does not change the result | out |
-| The exact place of a limit | out |
+| The exact byte at which a limit applies | out |
 | h2c, HTTP/2, HTTP/3 and TLS. Chrome speaks HTTP/2 and HTTP/3 only over TLS | out |
 | A request that no browser sends | out |
 | A listener on an address that is not loopback, such as `::` or `0.0.0.0`, or on an IPv4-mapped IPv6 address, such as `::ffff:127.0.0.1` | out |
@@ -1147,7 +1154,8 @@ The server also makes guarantees of its own that go beyond the reference:
   [Deliberate differences](#deliberate-differences).
 - A slow or endless streamed response body does not block the other connections. A handler never
   makes `tick()` throw. A process paused at a breakpoint does not lose a complete header section.
-  See [Ticking and waiting](#ticking-and-waiting).
+  See [Ticking and waiting](#ticking-and-waiting) and
+  [onError and ClosedWithErrors](#onerror-and-closedwitherrors).
 - `(string) $request->body`, `onError`, `ClosedWithErrors` and `deleteFile` are additions to the
   reference; see [Deliberate differences](#deliberate-differences).
 
@@ -1266,46 +1274,45 @@ and the suite that tests them.
 ### The suites
 
 The suites that compare live need the Go version and the FrankenPHP binary that
-[CONTRIBUTING.md](.github/CONTRIBUTING.md#setup) installs.
+[CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md#setup) installs.
 
 | Suite | What it checks | Compared live with |
 |---|---|---|
 | `RequestLine`, `Headers`, `Framing`, `Smuggling`, `Limits`, `Connection`, `Responses`, `Files`, `Handler`, `Transport` | one part of HTTP/1.1 each | FrankenPHP or Go `net/http`, as for `GoNetHttp`, where a test names it |
-| `GoNetHttp` | the requests in [`cases.json`](tests/Fixtures/go-net-http/cases.json): those of Go's test files and probes of its rules. The parser must read each one as Go does: whole, one byte at a time, and a case over 256 KiB in pieces of 4,093 bytes. Then mutated requests. A valid request gets FrankenPHP's bytes; any request that is not valid gets the 400 from [Scope](#scope) | for the parser, a Go `net/http` server from `tests/GoNetHttp/reference`; for the responses, the FrankenPHP binary, which runs the same test handler in `tests/FrankenPhp/go/index.php` |
-| `FrankenPhp` | the cases in [`cases.json`](tests/Fixtures/frankenphp/cases.json). Each case names, as needed, a php.ini, a status, headers, a body, the ini settings that the handler changes, and an exception. The HTTP/1.0 cases get the 400 from [Scope](#scope). Then Caddy's probes, as for `GoNetHttp`. Then the requests Chrome sent, in [`chrome/`](tests/Fixtures/chrome), on their connections, except those with a multipart body, which PHP parses itself; the one with an invalid percent-encoding gets the 400 from [Scope](#scope) | the FrankenPHP binary, which runs `tests/FrankenPhp/app/index.php`, and for the probes and Chrome's requests `tests/FrankenPhp/go/index.php` |
+| `GoNetHttp` | the requests in [`cases.json`](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/go-net-http/cases.json): those of Go's test files and probes of its rules. The parser must read each one as Go does: whole, one byte at a time, and a case over 256 KiB in pieces of 4,093 bytes. Then mutated requests. A valid request gets FrankenPHP's bytes; any request that is not valid gets the 400 from [Scope](#scope) | for the parser, a Go `net/http` server from `tests/GoNetHttp/reference`; for the responses, the FrankenPHP binary, which runs the same test handler in `tests/FrankenPhp/go/index.php` |
+| `FrankenPhp` | the cases in [`cases.json`](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/frankenphp/cases.json). Each case names, as needed, a php.ini, a status, headers, a body, the ini settings that the handler changes, and an exception. The HTTP/1.0 cases get the 400 from [Scope](#scope). Then Caddy's probes, as for `GoNetHttp`. Then the requests Chrome sent, in [`chrome/`](https://github.com/sorge-it/http-server/tree/main/tests/Fixtures/chrome), on their connections, except those with a multipart body, which PHP parses itself; the one with an invalid percent-encoding gets the 400 from [Scope](#scope) | the FrankenPHP binary, which runs `tests/FrankenPhp/app/index.php`, and for the probes and Chrome's requests `tests/FrankenPhp/go/index.php` |
 | `BeyondGo` | the string form of the body, the close after a 413, and the PHP state that the handler shares with the test; see [Deliberate differences](#deliberate-differences) | none |
 | `Api` | which classes are public, and that none of them names an internal class | none |
-| `Scope` | the guard for each out-of-scope row of [Scope](#scope), from [`out.php`](tests/Scope/out.php): patterns that the code in `src/`, without its comments, must not contain, and requests that get the 400 from Scope before the client disconnects, or the reason a row has none. It fails when the rows and the guards differ | none |
+| `Scope` | the guard for each out-of-scope row of [Scope](#scope), from [`out.php`](https://github.com/sorge-it/http-server/blob/main/tests/Scope/out.php): patterns that the code in `src/`, without its comments, must not contain, and requests that get the 400 from Scope before the client disconnects, or the reason a row has none. It fails when the rows and the guards differ | none |
 | `Fuzz` | the parser with mutated requests from fixed seeds. It must read each one the same way whole, one byte at a time, and in random packets | none |
 | `Example` | the examples in this README: each test and script runs, and this README shows its code; the handlers of [Works with](#works-with-symfony-laravel-and-psr-15) run in the weekly `works-with` job. The browser tests `ChromeTest` and `FormTest` use the Chrome that `CHROME` names; without `CHROME`, they are skipped | none |
 
 The live suites compare each byte of the responses, with the same `Date` and the same PHP version,
 in the form that Chrome receives: a chunked body as a single chunk, without trailers. The
 `FrankenPhp` suite masks the file and the line in an error page but keeps its length.
-[`tests/Fixtures/README.md`](tests/Fixtures/README.md) describes the cases, the probes and the lock
+[`tests/Fixtures/README.md`](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/README.md) describes the cases, the probes and the lock
 files.
 
 ## Development
 
-`composer test` runs Pint, Rector, PHPStan at level max, 100% type coverage and the suites. CI adds
-100% line coverage, with one block excluded that only another process can reach, and Docker jobs on
-Debian and Alpine. Weekly jobs run the mutation tests, with a minimum score of 99%. They also
-compare against the newest Caddy and FrankenPHP and against the Go version that the pinned
-FrankenPHP uses. One job runs the handlers of [Works with](#works-with-symfony-laravel-and-psr-15)
-with the newest Symfony, Laravel and Slim. Every action and every Docker image is pinned to a commit
-or a digest. [CONTRIBUTING.md](.github/CONTRIBUTING.md) covers the setup and what a pull request
+Weekly jobs check the pins against the newest releases of Caddy and FrankenPHP and run the suites
+with them. The weekly `works-with` job runs the handlers of
+[Works with Symfony, Laravel and PSR-15](#works-with-symfony-laravel-and-psr-15) with the newest
+Symfony, Laravel and Slim.
+Every action and every Docker image is pinned to a commit or a digest.
+[CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md) covers the setup, the tests and what a pull request
 needs.
 
 ## Support
 
 Found a bug? Open a pull request with a failing test; a fix is welcome but not required. The issue
-tracker is closed; see [CONTRIBUTING.md](.github/CONTRIBUTING.md). Report a vulnerability privately
-through GitHub; see [SECURITY.md](.github/SECURITY.md).
+tracker is closed; see [CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md). Report a vulnerability privately
+through GitHub; see the [security policy](https://github.com/sorge-it/http-server/security/policy).
 
 ## License
 
 MIT; see [LICENSE](LICENSE). The fixtures keep their original licenses; see
-[tests/Fixtures/README.md](tests/Fixtures/README.md).
+[tests/Fixtures/README.md](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/README.md).
 
 ## About the author
 
