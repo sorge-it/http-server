@@ -1,6 +1,6 @@
-<!-- See .github/CONTRIBUTING.md. A vulnerability goes to the security policy, not here. -->
+<!-- See .github/CONTRIBUTING.md. Report a vulnerability as the security policy describes, not here. -->
 
-**What goes wrong, or what the feature does:**
+**What went wrong and what you expected, or what the feature does; with a fix, why it works:**
 
 **The row of Scope in the README that it touches, and the layer that decides it:**
 
