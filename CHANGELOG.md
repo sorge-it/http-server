@@ -6,6 +6,11 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- `SECURITY.md` moved to `.github/` and is no longer in the package. The security link in
+  `composer.json` points to the security policy on GitHub.
+
 ### Fixed
 
 - `new Server()` refuses a host that resolves to an address that is not loopback, such as

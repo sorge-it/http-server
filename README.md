@@ -1266,7 +1266,7 @@ and the suite that tests them.
 ### The suites
 
 The suites that compare live need the Go version and the FrankenPHP binary that
-[CONTRIBUTING.md](CONTRIBUTING.md#setup) installs.
+[CONTRIBUTING.md](.github/CONTRIBUTING.md#setup) installs.
 
 | Suite | What it checks | Compared live with |
 |---|---|---|
@@ -1293,13 +1293,14 @@ Debian and Alpine. Weekly jobs run the mutation tests, with a minimum score of 9
 compare against the newest Caddy and FrankenPHP and against the Go version that the pinned
 FrankenPHP uses. One job runs the handlers of [Works with](#works-with-symfony-laravel-and-psr-15)
 with the newest Symfony, Laravel and Slim. Every action and every Docker image is pinned to a commit
-or a digest. [CONTRIBUTING.md](CONTRIBUTING.md) covers the setup and what a pull request needs.
+or a digest. [CONTRIBUTING.md](.github/CONTRIBUTING.md) covers the setup and what a pull request
+needs.
 
 ## Support
 
 Found a bug? Open a pull request with a failing test; a fix is welcome but not required. The issue
-tracker is closed; see [CONTRIBUTING.md](CONTRIBUTING.md). Report a vulnerability privately through
-GitHub; see [SECURITY.md](SECURITY.md).
+tracker is closed; see [CONTRIBUTING.md](.github/CONTRIBUTING.md). Report a vulnerability privately
+through GitHub; see [SECURITY.md](.github/SECURITY.md).
 
 ## License
 

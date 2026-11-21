@@ -12,6 +12,7 @@ Do not report a vulnerability in a public issue or pull request. Report it priva
 Include the raw request bytes that reproduce the vulnerability, and the output of `php -v`. If you
 have a fix, say so in the report. There is no fixed response time.
 
-The server is not for production. The README's [Scope](README.md#scope) names what it is for and
-what it does not limit. [HTTP behavior](README.md#http-behavior) names what it reads and what it
-rejects.
+The server is not for production. The README's
+[Scope](https://github.com/sorge-it/http-server#scope) names what it is for and what it does not
+limit. [HTTP behavior](https://github.com/sorge-it/http-server#http-behavior) names what it reads
+and what it rejects.

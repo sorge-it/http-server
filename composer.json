@@ -14,7 +14,7 @@
     "support": {
         "source": "https://github.com/sorge-it/http-server",
         "docs": "https://github.com/sorge-it/http-server#readme",
-        "security": "https://github.com/sorge-it/http-server/blob/main/SECURITY.md"
+        "security": "https://github.com/sorge-it/http-server/security/policy"
     },
     "require": {
         "php": "^8.4",
