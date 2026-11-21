@@ -116,8 +116,8 @@ composer require --dev sorge-it/http-server
 ```
 
 It requires PHP 8.4 or a later 8.x, the extension `ext-filter`, which PHP builds by default, and
-no other packages. CI runs the suites on Linux (Ubuntu, Debian and Alpine) and macOS, not on
-Windows.
+no other packages. It runs on Linux and macOS: CI runs the suites on Ubuntu, Debian, Alpine and
+macOS. Windows is not supported, because no CI job runs there.
 Versions follow [Semantic Versioning](https://semver.org): the classes and the interface marked
 `@api` are the public API, and [CHANGELOG.md](CHANGELOG.md) lists each change.
 
@@ -855,6 +855,16 @@ for it. Caddy and the PHP SAPI change the request and the response (see
 [Layers](#layers-who-decides-what)), so the suite compares the responses with FrankenPHP. Some
 points, such as the exact place of a limit, are out of scope; this section describes them as the
 server handles them today.
+
+The reference differs from RFC 9110 and RFC 9112 in three points, and the server follows it:
+
+- A request line longer than `maxHead` gets 431. RFC 9112 section 3 names 414 for a request target
+  that is too long. Go counts the request line in `MaxHeaderBytes`.
+- The server's own 400 and its 431 have no `Date`. RFC 9110 section 6.6.1 requires it in a 4xx
+  from an origin server with a clock. Go writes these responses without it.
+- A method longer than 32 bytes gets Caddy's 405, without `Allow`. RFC 9112 section 3 names 501
+  for a method longer than any the server implements, and RFC 9110 section 15.5.6 requires `Allow`
+  in a 405.
 
 ### A valid request
 
