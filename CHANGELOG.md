@@ -6,6 +6,13 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `new Server()` refuses a host that resolves to an address that is not loopback, such as
+  `0.0.0.0` or `0`, before it listens. Until now it listened on the address for a moment and then
+  refused it. A host that cannot be bound now throws `ListenFailed` with "could not bind". A name
+  such as `localhost` now listens only on the first address it resolves to.
+
 ## [1.0.0] - 2026-11-20
 
 The first public release. HttpServer is an in-process HTTP/1.1 server for Pest and PHPUnit

@@ -126,7 +126,7 @@ return [
     ],
     [
         'row' => 'A listener on an address that is not loopback',
-        'none' => 'No pattern finds a missing check, and each probe goes to loopback. `new Server()` refuses such an address with `ListenFailed`, as the test "refuses an address that is not loopback with ListenFailed, and no client reaches its port after it" of `Transport` shows.',
+        'none' => 'No pattern finds a missing check, and each probe goes to loopback. `new Server()` refuses such an address with `ListenFailed`, as the test "refuses an address that is not loopback with ListenFailed before it binds the port" of `Transport` shows.',
     ],
     [
         'row' => "The routes of FrankenPHP's `php_server`",
