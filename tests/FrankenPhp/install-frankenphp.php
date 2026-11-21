@@ -31,8 +31,8 @@ if ($installed && is_file($directory.'/ATTESTED')) {
 }
 
 // Upstream rebuilds a release, so release.lock pins no SHA-256; the attestation shows who built the
-// binary of today. Where gh cannot check, as in the Docker jobs, the binary runs unchecked until an
-// install where it can; on CI, linux-arm64 runs only in Docker and stays unchecked.
+// binary of today. Where gh cannot check, as in a Docker image, the binary runs unchecked until an
+// install where it can; in CI, a Docker job installs it on the runner, which has gh.
 $canAttest = Release::canAttest();
 
 if ($installed && ! $canAttest) {
@@ -55,15 +55,9 @@ try {
         echo 'Download FrankenPHP '.$tag.' for '.$system.PHP_EOL;
         $sha256 = Release::digests($tag)[$asset] ?? throw new RuntimeException('FrankenPHP '.$tag.' has no '.$asset.'.');
         Release::download($tag, $asset, $sha256, $directory.'/frankenphp', 'the API of GitHub');
-        $found = Release::versionOf($directory.'/frankenphp');
-
-        if ($found !== $version) {
-            unlink($directory.'/frankenphp');
-
-            throw new RuntimeException('The binary of FrankenPHP '.$tag.' names '.$found.', release.lock '.$version.'. Upstream built it again with other versions: run composer frankenphp:lock.');
-        }
     }
 
+    // The check comes before the binary runs for its versions.
     if ($canAttest) {
         try {
             Release::attest($directory.'/frankenphp', $asset);
@@ -78,6 +72,17 @@ try {
         echo 'gh verified the attestation of '.$asset.'.'.PHP_EOL;
     } else {
         echo 'No gh with a login or a token: the attestation is not checked.'.PHP_EOL;
+    }
+
+    if (! $installed) {
+        $found = Release::versionOf($directory.'/frankenphp');
+
+        if ($found !== $version) {
+            @unlink($directory.'/ATTESTED');
+            unlink($directory.'/frankenphp');
+
+            throw new RuntimeException('The binary of FrankenPHP '.$tag.' names '.$found.', release.lock '.$version.'. Upstream built it again with other versions: run composer frankenphp:lock.');
+        }
     }
 } catch (RuntimeException|JsonException $exception) {
     fwrite(STDERR, $exception->getMessage().PHP_EOL);

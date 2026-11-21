@@ -248,11 +248,19 @@ jobs:
       - name: Build
         run: docker build --quiet --tag tests .github/docker/alpine
 
-      # Into the tree, so the cache keeps it and the container of the test copies it.
+      # On the runner, because the image has no gh to check the attestation. Into the tree, so the
+      # cache keeps it and the container of the test copies it.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: none
+
       - name: Install FrankenPHP
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: docker run --rm --env GITHUB_TOKEN --volume "$PWD:/src" --workdir /src --entrypoint php tests tests/FrankenPhp/install-frankenphp.php
+        run: php tests/FrankenPhp/install-frankenphp.php && test -f .frankenphp/ATTESTED
 
       - name: Test
         run: |
@@ -284,11 +292,19 @@ jobs:
       - name: Build
         run: docker build --quiet --tag tests .github/docker/debian
 
-      # Into the tree, so the cache keeps it and the container of the test copies it.
+      # On the runner, because the image has no gh to check the attestation. Into the tree, so the
+      # cache keeps it and the container of the test copies it.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: none
+
       - name: Install FrankenPHP
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: docker run --rm --env GITHUB_TOKEN --volume "$PWD:/src" --workdir /src --entrypoint php tests tests/FrankenPhp/install-frankenphp.php
+        run: php tests/FrankenPhp/install-frankenphp.php && test -f .frankenphp/ATTESTED
 
       - name: Test
         run: |

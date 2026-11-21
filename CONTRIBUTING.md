@@ -30,7 +30,8 @@ composer test                # Pint and Rector dry runs, PHPStan, 100% type cove
   (see [Before you open a pull request](#before-you-open-a-pull-request)).
 - Where `gh` has a login or a token, `frankenphp:install` also uses `gh attestation verify` to
   check that FrankenPHP's workflow built the binary. A binary that fails the check is deleted.
-  Where `gh` has neither, the binary runs unchecked, as in the Docker jobs.
+  The check comes before the binary first runs. Where `gh` has neither, as in a Docker image, the
+  binary runs unchecked; so in CI, a Docker job installs the binary on the runner, which has `gh`.
 
 ## Reporting a bug
 
