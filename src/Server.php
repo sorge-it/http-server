@@ -209,7 +209,7 @@ final class Server
         }
 
         if ($this->busy()) {
-            throw new LogicException('tick() is already running, or close() resumes a handler. A tick now would answer later requests before the one in progress.');
+            throw new LogicException('tick() is already running, or close() resumes a handler. A tick now would answer later requests before the one in progress. Return from the handler, and call tick() and close() from the test.');
         }
 
         $this->ticking = true;
@@ -234,7 +234,7 @@ final class Server
     public function close(): void
     {
         if ($this->busy()) {
-            throw new LogicException('close() was called during tick(), or from a handler that close() resumes. A close now would end the request in progress.');
+            throw new LogicException('close() was called during tick(), or from a handler that close() resumes. A close now would end the request in progress. Return from the handler, and call tick() and close() from the test.');
         }
 
         $this->closing = true;

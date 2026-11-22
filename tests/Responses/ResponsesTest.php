@@ -149,7 +149,7 @@ it('answers the 500 of a handler that throws for a body whose first chunk fails 
         ->and($errors)->toBe([$message, $message]);
 })->with([
     'a throw' => [static fn (): Generator => yield throw new RuntimeException('first'), 'RuntimeException: first'],
-    'an integer' => [static fn (): array => [1], 'UnexpectedValueException: The body gave int, not a string. A streamed body yields strings; for JSON, pass json_encode($data) as the body.'],
+    'an integer' => [static fn (): array => [1], 'UnexpectedValueException: The streamed body yielded int, not a string. Yield strings; for JSON, pass json_encode($data) as the body.'],
 ]);
 
 it('ends the body for a later chunk that throws, as FrankenPHP for a script that throws, and gives onError the throwable', function (): void {
@@ -171,7 +171,7 @@ it('ends the connection for a later chunk that is not a string, and gives onErro
 
     expect(substr_count($answer, 'HTTP/1.1 '))->toBe(1)
         ->and($answer)->toEndWith("\r\n\r\n2\r\nok\r\n\n<closed>")
-        ->and($errors)->toBe(['UnexpectedValueException: The body gave int, not a string. A streamed body yields strings; for JSON, pass json_encode($data) as the body.']);
+        ->and($errors)->toBe(['UnexpectedValueException: The streamed body yielded int, not a string. Yield strings; for JSON, pass json_encode($data) as the body.']);
 });
 
 it('gives onError the LogicException of a close() from a later chunk, and stays open', function (): void {

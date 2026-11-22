@@ -85,11 +85,11 @@ final readonly class Request
             $name = (string) $name;
 
             if ($name !== strtolower($name)) {
-                return 'has the name '.addcslashes($name, "\0..\37\177..\377").', which is not lowercase';
+                return 'has the name '.addcslashes($name, "\0..\37\177..\377").", which is not lowercase; map each lowercase name to a list of values, such as ['content-type' => ['text/plain']]";
             }
 
             if (! is_array($values) || ! array_is_list($values)) {
-                return 'has values of '.addcslashes($name, "\0..\37\177..\377").' that are not a list';
+                return 'has values of '.addcslashes($name, "\0..\37\177..\377")." that are not a list; map each lowercase name to a list of values, such as ['content-type' => ['text/plain']]";
             }
         }
 

@@ -212,7 +212,7 @@ it('gives onError the errors of a pipelined request that waits for its body when
 
         expect(feof($client))->toBeTrue()
             ->and($errors)->toBe([
-                'LogicException: The server closed before the body was complete, with 3 of 10 bytes read',
+                'LogicException: The server closed before the body was complete, with 3 of 10 bytes read.',
                 'RuntimeException: read abc',
             ]);
     } finally {

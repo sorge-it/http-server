@@ -38,6 +38,11 @@ final readonly class Response
         if ($body !== '' && $file !== null) {
             throw new ValueError(sprintf('%s::__construct(): Argument #3 ($body) must be empty when Argument #4 ($file) is given', self::class));
         }
+
+        // A streamed body would send the values without the keys, as `yesAda` for JSON data.
+        if (is_array($body) && ! array_is_list($body)) {
+            throw new ValueError(sprintf('%s::__construct(): Argument #3 ($body) must be a list of strings, not an array with keys; for JSON, pass json_encode($data)', self::class));
+        }
     }
 
     /**
@@ -50,7 +55,7 @@ final readonly class Response
     {
         foreach ($headers as $name => $values) {
             if (is_int($name)) {
-                return 'has the key '.$name.', which is not a header name';
+                return 'has the key '.$name.", which is not a header name; map each name to its value, such as ['X-Foo' => 'bar']";
             }
 
             // Not `(array)`: it makes an object the list of its properties.
