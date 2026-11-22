@@ -14,6 +14,6 @@ echo "  \033[1mThe page sees your test's transaction.\033[0m\n\n";
 echo "  \033[2m# Ada exists only in the test's transaction.\033[0m\n";
 echo "  php -S       \033[1;31m".implode(' ', $second)."\033[0m   \033[2m# a second process\033[0m\n";
 echo "  HttpServer   \033[1;32m".implode(' ', $same)."\033[0m    \033[2m# the test process\033[0m\n\n";
-echo "  In-process HTTP server for Pest and PHPUnit\n";
+echo "  In-process HTTP/1.1 server for Pest and PHPUnit\n";
 echo "  browser tests, built for coding agents.\n";
 echo "  Tested against FrankenPHP.\n";
