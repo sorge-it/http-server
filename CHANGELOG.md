@@ -6,6 +6,8 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-22
+
 ### Changed
 
 - The reference is FrankenPHP 1.14.0 with PHP 8.6.0. Its responses are the same as those of
@@ -49,6 +51,7 @@ response with the FrankenPHP binary, in the form that Chrome receives, and the p
 `net/http`. The README states the scope and each deliberate difference. The 0.x releases were
 private.
 
-[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/sorge-it/http-server/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sorge-it/http-server/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sorge-it/http-server/releases/tag/v1.0.0
