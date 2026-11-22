@@ -1,4 +1,4 @@
 # The versions that the binary of composer frankenphp:install names. composer check:frankenphp
 # compares them with the newest release. composer frankenphp:lock writes new versions after a check
 # of the attestation of each binary.
-FrankenPHP v1.13.6 PHP 8.5.13 Caddy v2.11.9
+FrankenPHP v1.14.0 PHP 8.6.0 Caddy v2.11.9

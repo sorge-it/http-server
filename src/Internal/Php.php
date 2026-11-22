@@ -11,7 +11,7 @@ use SorgeIt\HttpServer\Response;
 use Throwable;
 
 /**
- * The SAPI of PHP 8.5.13 in FrankenPHP 1.13.6, with the php.ini of this process: what they do to
+ * The SAPI of PHP 8.6.0 in FrankenPHP 1.14.0, with the php.ini of this process: what they do to
  * the response of a script that calls `header()` for each value, then `http_response_code()`,
  * then echoes the body. Each rule names its place in the source.
  *
@@ -27,14 +27,14 @@ final class Php
 
     /**
      * What `isspace()` of C finds; `sapi_header_op()` cuts it off the end of a header,
-     * main/SAPI.c:740.
+     * main/SAPI.c:712.
      */
     private const string SPACE = " \t\n\r\v\f";
 
     /**
      * The ini of `INI` is read after the handler and its first chunk, as PHP sends the headers
      * then. `zend_deactivate()` resets an ini the script set at the end of the request,
-     * main/main.c:2055; the server sets its own back after the handler and after each later chunk.
+     * main/main.c:2006; the server sets its own back after the handler and after each later chunk.
      *
      * @param  Closure(Request): Response  $handler
      * @param  Closure(Throwable): void  $failed  takes each throwable PHP turns into output
@@ -83,7 +83,7 @@ final class Php
     /**
      * @param  array<string, string>  $ini  the values of `INI`, as `ini_get()` gives them
      * @param  bool  $thrown  a throw before any output: a status of 200 becomes 500 where
-     *                        `display_errors` is off, main/main.c:1541-1549
+     *                        `display_errors` is off, main/main.c:1494-1502
      */
     public static function response(Response $response, Request $request, array $ini, bool $thrown = false): Response
     {
@@ -101,7 +101,7 @@ final class Php
                 $first = false;
                 $line = rtrim($name.': '.$value, self::SPACE);
 
-                // PHP refuses the header with a warning, main/SAPI.c:763.
+                // PHP refuses the header with a warning, main/SAPI.c:735.
                 if (strpbrk($line, "\r\n\0") !== false) {
                     continue;
                 }
@@ -115,7 +115,7 @@ final class Php
 
                 $status = self::status($status, $key);
 
-                // `header()` replaces each header of the name, main/SAPI.c:666.
+                // `header()` replaces each header of the name, main/SAPI.c:638.
                 if ($replaces) {
                     $lines = array_filter($lines, static fn (string $kept): bool => strcasecmp((string) strstr($kept, ':', true), $key) !== 0);
                 }
@@ -126,7 +126,7 @@ final class Php
 
         $mimetype = $ini['default_mimetype'] ?? '';
 
-        // `sapi_send_headers()`, main/SAPI.c:878, and `get_default_content_type()`, 303.
+        // `sapi_send_headers()`, main/SAPI.c:850, and `get_default_content_type()`, 275.
         if (! $typed && $mimetype !== '') {
             $lines[] = 'Content-type: '.$mimetype.($charset !== '' && strncasecmp($mimetype, 'text/', 5) === 0 ? '; charset='.$charset : '');
         }
@@ -153,7 +153,7 @@ final class Php
             return new Response($status, $headers, $response->body, $response->file, $response->deleteFile);
         }
 
-        // For HEAD, PHP sends no output, main/output.c:121. The length of a file is a header of
+        // For HEAD, PHP sends no output, main/output.c:119. The length of a file is a header of
         // the script.
         if ($response->file !== null) {
             $headers['Content-Length'] = [(string) filesize($response->file)];
@@ -178,9 +178,9 @@ final class Php
     }
 
     /**
-     * The status after a header, main/SAPI.c:834-852: `Location` gives 302 unless the status is
+     * The status after a header, main/SAPI.c:806-824: `Location` gives 302 unless the status is
      * 201 or 3xx, and `WWW-Authenticate` 401. The 303 for a POST never comes: `sapi_activate()`
-     * sets the version to 1.0, main/SAPI.c:452, after cgi.go:464 set it, frankenphp.c:1951.
+     * sets the version to 1.0, main/SAPI.c:421, after cgi.go:464 set it, frankenphp.c:1959.
      */
     private static function status(int $status, string $name): int
     {
@@ -270,12 +270,12 @@ final class Php
 
     /**
      * The fatal error of an uncaught throwable with `html_errors`, as `php_error_cb()` writes it,
-     * main/main.c:1497-1499, of the message of `zend_exception_error()`.
+     * main/main.c:1450-1452, of the message of `zend_exception_error()`.
      */
     private static function page(Throwable $throwable): string
     {
         $message = 'Uncaught '.self::described($throwable)."\n  thrown";
-        // `escape_html()`, main/main.c:1055: a second try replaces bytes the charset does not take.
+        // `escape_html()`, main/main.c:1060: a second try replaces bytes the charset does not take.
         $escaped = htmlspecialchars($message, ENT_COMPAT);
         $escaped = $escaped === '' ? htmlspecialchars($message, ENT_COMPAT | ENT_SUBSTITUTE) : $escaped;
 
@@ -311,7 +311,7 @@ final class Php
     }
 
     /**
-     * The value as `php_get_display_errors_mode()` reads it, main/main.c:514: `stderr` writes to
+     * The value as `php_get_display_errors_mode()` reads it, main/main.c:517: `stderr` writes to
      * the output too, as FrankenPHP is no CLI.
      */
     private static function displays(string $value): bool
@@ -328,7 +328,7 @@ final class Php
     }
 
     /**
-     * `sapi_apply_default_charset()`, main/SAPI.c:369: a type that starts with `text/`, in that
+     * `sapi_apply_default_charset()`, main/SAPI.c:341: a type that starts with `text/`, in that
      * case, and holds no `charset=` gets `default_charset`.
      */
     private static function type(string $line, int $colon, string $charset): string

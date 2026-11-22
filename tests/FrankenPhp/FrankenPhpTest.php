@@ -146,18 +146,18 @@ function frankenPhpCases(): array
 it('names in each place the FrankenPHP of release.lock and its PHP', function (): void {
     $version = strtok((string) preg_replace('/^#.*\n/m', '', (string) file_get_contents(FRANKENPHP_FIXTURE.'/release.lock')), "\n");
 
-    expect($version)->toBe('FrankenPHP v1.13.6 PHP 8.5.13 Caddy v2.11.9')
+    expect($version)->toBe('FrankenPHP v1.14.0 PHP 8.6.0 Caddy v2.11.9')
         ->and(FrankenPhpReference::get()->version())->toStartWith($version.' ')
-        ->and(file_get_contents(FRANKENPHP_FIXTURE.'/frankenphp.lock'))->toContain('blobs at v1.13.6')
-        ->and(file_get_contents(FRANKENPHP_FIXTURE.'/php-src.lock'))->toContain('blobs at php-8.5.13')
-        ->and(file_get_contents(__DIR__.'/../../src/Internal/Php.php'))->toContain('PHP 8.5.13 in FrankenPHP 1.13.6')
+        ->and(file_get_contents(FRANKENPHP_FIXTURE.'/frankenphp.lock'))->toContain('blobs at v1.14.0')
+        ->and(file_get_contents(FRANKENPHP_FIXTURE.'/php-src.lock'))->toContain('blobs at php-8.6.0')
+        ->and(file_get_contents(__DIR__.'/../../src/Internal/Php.php'))->toContain('PHP 8.6.0 in FrankenPHP 1.14.0')
         ->and(file_get_contents(CADDY_FIXTURE.'/caddy.lock'))->toContain('blobs at v2.11.9 (')
-        ->and(file_get_contents(CADDY_FIXTURE.'/frankenphp.lock'))->toContain('blobs at v1.13.6 (')
-        ->and(file_get_contents(__DIR__.'/../../src/Internal/Caddy.php'))->toContain('Caddy 2.11.9 ')->toContain('FrankenPHP 1.13.6 ');
+        ->and(file_get_contents(CADDY_FIXTURE.'/frankenphp.lock'))->toContain('blobs at v1.14.0 (')
+        ->and(file_get_contents(__DIR__.'/../../src/Internal/Caddy.php'))->toContain('Caddy 2.11.9 ')->toContain('FrankenPHP 1.14.0 ');
 })->group('pins');
 
 // The suites give FrankenPHP the `maxHead` of the server, so this test alone sees the default of
-// Caddy. With a `max_header_size` of 16 KB, FrankenPHP 1.13.6 takes a head of 20494 bytes and
+// Caddy. With a `max_header_size` of 16 KB, FrankenPHP 1.14.0 takes a head of 20494 bytes and
 // refuses one byte more: Go reads 4096 bytes more, net/http/server.go:957.
 it('has the MaxHeaderBytes of Caddy::MAX_HEADER_BYTES in FrankenPHP without max_header_size', function (): void {
     $status = static function (int $length, bool $set): string {

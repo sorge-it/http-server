@@ -9,7 +9,7 @@ use SorgeIt\HttpServer\Request;
 use SorgeIt\HttpServer\Response;
 
 /**
- * The defaults and checks of Caddy 2.11.9 that FrankenPHP 1.13.6 serves with. Each names its place
+ * The defaults and checks of Caddy 2.11.9 that FrankenPHP 1.14.0 serves with. Each names its place
  * in the source of Caddy, `modules/caddyhttp/`, so a new Caddy is compared place by place.
  *
  * @internal

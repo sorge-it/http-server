@@ -1,8 +1,8 @@
 # The files of FrankenPHP the layer of Caddy follows, with their
-# blobs at v1.13.6 (6775138789d2d0b834b6447cdc3e56b383fd651d), in the order of git ls-tree.
+# blobs at v1.14.0 (30c6bb778ebbb56d7dceb939993160210fba01b2), in the order of git ls-tree.
 # composer check:caddy fails when the newest release of FrankenPHP has other blobs.
-abf1652411bda2367863af68928024e5303cb22f  Dockerfile
+acd80f61ff9df374a09533f7eaa8261767868be4  Dockerfile
 093949a8efe7956ab5f699a4933b8246d533e5aa  alpine.Dockerfile
 cc9bd523fe1fe133e9f40e92e326551400ec481a  caddy/frankenphp/Caddyfile
-b978384faba830ebd1c77d5d943742e224fc10a0  caddy/module.go
+aefa2cf2ce8fe30ba9e5c6eeeab2823390317d4a  caddy/module.go
 bd5fb4da7675f0e74d95ef04031ac6e1c6ba415b  caddy/php-server.go

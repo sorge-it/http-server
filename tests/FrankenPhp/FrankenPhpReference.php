@@ -184,7 +184,7 @@ final class FrankenPhpReference
     }
 
     /**
-     * The first lines of the version of the binary, such as `FrankenPHP v1.13.6 PHP 8.5.13 ...`.
+     * The first lines of the version of the binary, such as `FrankenPHP v1.14.0 PHP 8.6.0 ...`.
      */
     public function version(): string
     {

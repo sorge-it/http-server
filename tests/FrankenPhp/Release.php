@@ -34,7 +34,7 @@ final class Release
     }
 
     /**
-     * The versions of release.lock, such as `FrankenPHP v1.13.6 PHP 8.5.13 Caddy v2.11.9`.
+     * The versions of release.lock, such as `FrankenPHP v1.14.0 PHP 8.6.0 Caddy v2.11.9`.
      */
     public static function version(): string
     {
@@ -44,7 +44,7 @@ final class Release
     }
 
     /**
-     * The tag of the release in the versions, such as `v1.13.6`.
+     * The tag of the release in the versions, such as `v1.14.0`.
      */
     public static function tag(string $version): string
     {
@@ -58,7 +58,7 @@ final class Release
     {
         exec(escapeshellarg($binary).' version 2>&1', $output, $status);
 
-        // Such as `FrankenPHP v1.13.6 PHP 8.5.13 Caddy v2.11.9 h1:…`.
+        // Such as `FrankenPHP v1.14.0 PHP 8.6.0 Caddy v2.11.9 h1:…`.
         if ($status !== 0 || preg_match('/^FrankenPHP \S+ PHP \S+ Caddy \S+/', implode("\n", $output), $match) !== 1) {
             throw new RuntimeException($binary.' names no versions: '.implode("\n", $output));
         }
@@ -118,7 +118,7 @@ final class Release
     }
 
     /**
-     * The tag of the newest release, such as `v1.13.6`. Not the newest tag: upstream tags a version
+     * The tag of the newest release, such as `v1.14.0`. Not the newest tag: upstream tags a version
      * and publishes its release hours later.
      */
     public static function newest(): string

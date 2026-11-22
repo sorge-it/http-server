@@ -6,6 +6,11 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The reference is FrankenPHP 1.14.0 with PHP 8.6.0. Its responses are the same as those of
+  1.13.6 with PHP 8.5.13; the suites compare them byte for byte.
+
 ## [1.1.0] - 2026-11-21
 
 ### Changed
