@@ -322,7 +322,7 @@ final class Connection
         // handler suspended itself waits for no read, so it is dropped.
         if ($fiber instanceof Fiber && $request instanceof Request && $fiber->isSuspended() && $this->parser->waits()) {
             $length = (int) $request->header('Content-Length');
-            $errors[] = [new LogicException(sprintf('The server closed before the body was complete, with %d of %d bytes read', $length - $this->parser->left(), $length)), $request];
+            $errors[] = [new LogicException(sprintf('The server closed before the body was complete, with %d of %d bytes read.', $length - $this->parser->left(), $length)), $request];
             $this->parser->end('read tcp '.$this->local.'->'.$this->remote.': '.Go::NET_CLOSING);
             $fiber->resume();
 

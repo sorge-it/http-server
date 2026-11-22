@@ -218,7 +218,7 @@ it('gives each request the IP and port of its client as Go gives RemoteAddr, and
         expect(substr_count($answers[0], '<'.$names[0].'|>'))->toBe(2)
             ->and($answers[1])->toEndWith('<'.$names[1].'|>')
             ->and(end($seen))->toBe('<'.$names[2].'|'.$closing.'>01')
-            ->and($errors)->toBe(['LogicException: The server closed before the body was complete, with 2 of 10 bytes read'])
+            ->and($errors)->toBe(['LogicException: The server closed before the body was complete, with 2 of 10 bytes read.'])
             ->and($names[0])->not->toBe($names[1])
             ->and($names[0])->toMatch($client === '[::1]' ? '/^\[::1]:\d+$/' : '/^127\.0\.0\.1:\d+$/');
 

@@ -13,8 +13,11 @@ it('answers the 500 of a handler that throws for a handler that gives no valid r
         ->and($errors)->toHaveCount(1)
         ->and($errors[0] ?? '')->toContain($message);
 })->with([
-    'null' => [static fn (Request $request): mixed => $request->path() === '/bad' ? null : new Response(200, [], 'ok'), 'The handler gave null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.'],
-    'a string' => [static fn (Request $request): mixed => $request->path() === '/bad' ? 'text' : new Response(200, [], 'ok'), 'The handler gave string, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README of sorge-it/http-server.'],
+    'null' => [static fn (Request $request): mixed => $request->path() === '/bad' ? null : new Response(200, [], 'ok'), 'The handler returned null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.'],
+    'a string' => [static fn (Request $request): mixed => $request->path() === '/bad' ? 'text' : new Response(200, [], 'ok'), 'The handler returned string, not a SorgeIt\\HttpServer\\Response. Wrap it: new Response(200, [], $body).'],
+    'an array' => [static fn (Request $request): mixed => $request->path() === '/bad' ? ['ok' => true] : new Response(200, [], 'ok'), 'The handler returned array, not a SorgeIt\\HttpServer\\Response. For JSON, return new Response(200, [\'Content-Type\' => \'application/json\'], json_encode($data)).'],
+    'an object' => [static fn (Request $request): mixed => $request->path() === '/bad' ? new stdClass : new Response(200, [], 'ok'), 'The handler returned stdClass, not a SorgeIt\\HttpServer\\Response. A handler for a framework converts its response; see "Works with Symfony, Laravel and PSR-15" in the README of sorge-it/http-server.'],
+    'a body that is an array with keys' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, [], ['ok' => 'yes']) : new Response(200, [], 'ok'), 'ValueError: '.Response::class.'::__construct(): Argument #3 ($body) must be a list of strings, not an array with keys; for JSON, pass json_encode($data)'],
     // @phpstan-ignore argument.type (a handler result the server cannot send)
     'a header value that is a number' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, ['X-Count' => 5]) : new Response(200, [], 'ok'), 'ValueError: '.Response::class.'::__construct(): Argument #2 ($headers) has a value of X-Count that is not a string'],
     // @phpstan-ignore argument.type (a handler result the server cannot send)
@@ -24,7 +27,7 @@ it('answers the 500 of a handler that throws for a handler that gives no valid r
     // @phpstan-ignore argument.type (a handler result the server cannot send)
     'a header value that is an object with a property' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, ['X-Arr' => (object) ['v']]) : new Response(200, [], 'ok'), 'Argument #2 ($headers) has a value of X-Arr that is not a string'],
     // @phpstan-ignore argument.type (a handler result the server cannot send)
-    'a header without a name' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, ['X: y']) : new Response(200, [], 'ok'), 'Argument #2 ($headers) has the key 0, which is not a header name'],
+    'a header without a name' => [static fn (Request $request): Response => $request->path() === '/bad' ? new Response(200, ['X: y']) : new Response(200, [], 'ok'), 'Argument #2 ($headers) has the key 0, which is not a header name; map each name to its value, such as [\'X-Foo\' => \'bar\']'],
 ]);
 
 it('takes header values with keys in their order, also where a warning throws', function (): void {
@@ -97,8 +100,8 @@ it('refuses a response with a header value that is not a string with a ValueErro
     'a value that is an object' => [['X' => new stdClass], 'has a value of X that is not a string'],
     'a value that is a number, of a name with a line break' => [["X\nY" => 1], 'has a value of X\nY that is not a string'],
     'values with keys, one an integer' => [['X' => ['a' => 'b', 'c' => 2]], 'has a value of X that is not a string'],
-    'an integer key, as of a list' => [['X: y'], 'has the key 0, which is not a header name'],
-    'a name of digits, which PHP makes an integer key' => [['123' => 'a'], 'has the key 123, which is not a header name'],
+    'an integer key, as of a list' => [['X: y'], "has the key 0, which is not a header name; map each name to its value, such as ['X-Foo' => 'bar']"],
+    'a name of digits, which PHP makes an integer key' => [['123' => 'a'], "has the key 123, which is not a header name; map each name to its value, such as ['X-Foo' => 'bar']"],
 ]);
 
 it('refuses a request with a header name that is not lowercase, or values that are not a list, with a ValueError', function (array $headers, string $fault): void {
@@ -106,10 +109,10 @@ it('refuses a request with a header name that is not lowercase, or values that a
     expect(static fn (): Request => new Request('GET', '/', $headers))
         ->toThrow(ValueError::class, Request::class.'::__construct(): Argument #3 ($headers) '.$fault);
 })->with([
-    'a name with an uppercase letter' => [['Content-Type' => ['a']], 'has the name Content-Type, which is not lowercase'],
-    'a name with a line break' => [["x\nY" => ['a']], 'has the name x\nY, which is not lowercase'],
-    'values that are a string' => [['x-a' => 'a'], 'has values of x-a that are not a list'],
-    'values with keys' => [['x-a' => ['k' => 'a']], 'has values of x-a that are not a list'],
+    'a name with an uppercase letter' => [['Content-Type' => ['a']], "has the name Content-Type, which is not lowercase; map each lowercase name to a list of values, such as ['content-type' => ['text/plain']]"],
+    'a name with a line break' => [["x\nY" => ['a']], 'has the name x\nY, which is not lowercase; map each lowercase name to a list of values, such as [\'content-type\' => [\'text/plain\']]'],
+    'values that are a string' => [['x-a' => 'a'], "has values of x-a that are not a list; map each lowercase name to a list of values, such as ['content-type' => ['text/plain']]"],
+    'values with keys' => [['x-a' => ['k' => 'a']], "has values of x-a that are not a list; map each lowercase name to a list of values, such as ['content-type' => ['text/plain']]"],
 ]);
 
 it('takes a request without headers, and a name of digits, which PHP makes an integer key', function (): void {
@@ -179,7 +182,7 @@ it('calls onError with each throwable that becomes a 500 of PHP and its request,
     expect(substr_count($answer, 'HTTP/1.1 500 '))->toBe(2)
         ->and($calls)->toBe([
             [LogicException::class, 'broken', '/throws', 1],
-            [UnexpectedValueException::class, 'The handler gave null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.', '/null', 1],
+            [UnexpectedValueException::class, 'The handler returned null, not a SorgeIt\\HttpServer\\Response. Return a Response from every path of the handler.', '/null', 1],
         ]);
 });
 
@@ -305,8 +308,8 @@ it('lets what onError throws leave close() once each connection and the listener
         }
 
         expect($thrown)->toBe([
-            ['RuntimeException: onError: /first: The server closed before the body was complete, with 1 of 5 bytes read', true, true, false],
-            ['RuntimeException: onError: /second: The server closed before the body was complete, with 1 of 5 bytes read', true, true, false],
+            ['RuntimeException: onError: /first: The server closed before the body was complete, with 1 of 5 bytes read.', true, true, false],
+            ['RuntimeException: onError: /second: The server closed before the body was complete, with 1 of 5 bytes read.', true, true, false],
             null,
         ]);
     } finally {

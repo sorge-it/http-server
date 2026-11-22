@@ -236,7 +236,7 @@ it('answers as PHP for a first chunk that is not a string, which the server find
     [$answer, $errors] = withDisplayErrors('0', static fn (): array => failed(static fn (): Response => new Response(body: new ArrayIterator([1])), "GET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n"));
 
     expect($answer)->toStartWith("HTTP/1.1 500 Internal Server Error\r\n")->toContain("\r\nContent-Length: 0\r\n")
-        ->and($errors)->toBe(['UnexpectedValueException: The body gave int, not a string. A streamed body yields strings; for JSON, pass json_encode($data) as the body.']);
+        ->and($errors)->toBe(['UnexpectedValueException: The streamed body yielded int, not a string. Yield strings; for JSON, pass json_encode($data) as the body.']);
 });
 
 it('gives onError each throwable PHP turns into output, once, and answers the next request', function (string $target, string $start): void {

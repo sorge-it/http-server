@@ -6,6 +6,16 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-22
+
+### Changed
+
+- `new Response()` throws a `ValueError` for an array with keys as a body. Such a body went out as
+  a stream of its values without the keys; for JSON, pass `json_encode($data)`.
+- More messages name the way out: a handler that returns a string or an array, `tick()` or
+  `close()` called from a handler, and the forms of the headers of `Request` and `Response`. A
+  handler's wrong value is now "returned", a streamed body's wrong chunk "yielded".
+
 ## [1.1.1] - 2026-11-22
 
 ### Changed
@@ -51,7 +61,8 @@ response with the FrankenPHP binary, in the form that Chrome receives, and the p
 `net/http`. The README states the scope and each deliberate difference. The 0.x releases were
 private.
 
-[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sorge-it/http-server/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sorge-it/http-server/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sorge-it/http-server/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sorge-it/http-server/releases/tag/v1.0.0
