@@ -5,6 +5,9 @@ on:
     branches: [main]
     tags: ['v*']
   pull_request:
+  # Weekly, as the stack newest changes with each release of a package, also without a commit here.
+  schedule:
+    - cron: '7 5 * * 1'
 
 permissions:
   contents: read

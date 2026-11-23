@@ -61,10 +61,9 @@ requires 100% line and type coverage, and the weekly mutation tests require a sc
 12. [API reference](#api-reference)
 13. [HTTP behavior](#http-behavior)
 14. [Compatibility with FrankenPHP](#compatibility-with-frankenphp)
-15. [Development](#development)
-16. [Support](#support)
-17. [License](#license)
-18. [About the author](#about-the-author)
+15. [Support](#support)
+16. [License](#license)
+17. [About the author](#about-the-author)
 
 Sections 1 to 11 are for users. Sections 12 to 14 are for looking up the details.
 
@@ -1293,20 +1292,11 @@ in the form that Chrome receives: a chunked body as a single chunk, without trai
 [`tests/Fixtures/README.md`](https://github.com/sorge-it/http-server/blob/main/tests/Fixtures/README.md) describes the cases, the probes and the lock
 files.
 
-## Development
-
-Weekly jobs check the pins against the newest releases of Caddy and FrankenPHP and run the suites
-with them. The weekly `works-with` job runs the handlers of
-[Works with Symfony, Laravel and PSR-15](#works-with-symfony-laravel-and-psr-15) with the newest
-Symfony, Laravel and Slim.
-Every action and every Docker image is pinned to a commit or a digest.
-[CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md) covers the setup, the tests and what a pull request
-needs.
-
 ## Support
 
 Found a bug? Open a pull request with a failing test; a fix is welcome but not required. The issue
-tracker is closed; see [CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md). Report a vulnerability privately
+tracker is closed; [CONTRIBUTING.md](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md) covers the setup, the tests and
+what a pull request needs. Report a vulnerability privately
 through GitHub; see the [security policy](https://github.com/sorge-it/http-server/security/policy).
 
 ## License
