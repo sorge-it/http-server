@@ -60,6 +60,9 @@
         <testsuite name="Example">
             <directory>tests/Example</directory>
         </testsuite>
+        <testsuite name="Repo">
+            <directory>tests/Repo</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

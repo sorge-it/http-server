@@ -50,10 +50,10 @@ PHPStan, Rector and the type coverage read `src` and `tests`; Pint reads the who
 The code must run on PHP 8.4 and 8.5, on macOS, and on Linux with glibc and with musl. The Docker
 jobs in CI run the suites as a non-root user, so that the file-mode tests run. To run
 such a job locally, use a clean clone, because the command copies the whole directory. Use `debian`
-or `alpine` as the directory in `.github/docker/`:
+or `alpine` as the directory in `docker/`:
 
 ```sh
-docker build --quiet --tag tests .github/docker/debian
+docker build --quiet --tag tests docker/debian
 docker run --rm --volume "$PWD:/src:ro" --entrypoint sh tests -euc '
   cp -a /src /work
   chown -R www-data /work
@@ -71,9 +71,9 @@ A workflow uses zizmor to audit the workflows and the Dependabot configuration i
 actionlint to check the workflows. Run both when you change anything there:
 
 ```sh
-docker build --quiet --tag zizmor .github/docker/zizmor
+docker build --quiet --tag zizmor docker/zizmor
 docker run --rm --volume "$PWD:/src:ro" --workdir /src zizmor --offline .github
-docker build --quiet --tag actionlint .github/docker/actionlint
+docker build --quiet --tag actionlint docker/actionlint
 docker run --rm --volume "$PWD:/src:ro" --workdir /src actionlint -no-color
 ```
 
