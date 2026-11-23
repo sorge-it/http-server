@@ -1306,18 +1306,21 @@ MIT; see [LICENSE](LICENSE). The fixtures keep their original licenses; see
 
 ## About the author
 
-**Stefan Sorge** has written PHP for 25 years and worked with more than 40 startups. He builds PHP
-tooling that humans and coding agents read and act on the same way.
+**Stefan Sorge** is a PHP expert, builder and agentic engineer. He has written PHP for more than 25
+years and has built software for over 40 startups. His tools are made for Agentic DX: a developer
+and a coding agent read the same output and act on it the same way.
 
-More packages:
+PHP packages:
 
-- [pest-plugin-browser-cdp](https://github.com/sorge-it/pest-plugin-browser-cdp): Pest browser tests
-  without Node, driven over the Chrome DevTools Protocol; serves your app with HttpServer
-- [cdp-browser-installer](https://github.com/sorge-it/cdp-browser-installer): a pinned headless
-  Chrome and ChromeDriver, installed through a Composer dev dependency
+- [http-server](https://github.com/sorge-it/http-server): an in-process HTTP/1.1 server for Pest
+  and PHPUnit browser tests; the page sees the test's `RefreshDatabase` transaction, `actingAs()`
+  user and fakes
+- [cdp-browser-installer](https://github.com/sorge-it/cdp-browser-installer): an installer for
+  chrome-headless-shell and ChromeDriver of the same version from Chrome for Testing, pinned and
+  SHA-256-checked
+- [safe-unzip](https://github.com/sorge-it/safe-unzip): a ZIP extractor that checks each archive
+  against a strict allow list and refuses Zip Slip, overlapping zip bombs and symbolic links
 - [phpunit-pest-html-assertions](https://github.com/sorge-it/phpunit-pest-html-assertions): HTML
-  assertions that keep coding agents from checking markup as a string
-- [safe-unzip](https://github.com/sorge-it/safe-unzip): safe ZIP extraction behind the `ZipArchive`
-  interface
+  assertions for PHPUnit and Pest that check rendered HTML with CSS selectors, never as a string
 
 [GitHub](https://github.com/sorge-it) · [LinkedIn](https://www.linkedin.com/in/stefansorge/)
