@@ -6,6 +6,20 @@ All notable changes to this package are in this file. The format follows
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-23
+
+### Changed
+
+- The README no longer has the section "Development", so a link to the anchor `#development`
+  does not go to a section.
+  [`CONTRIBUTING.md`](https://github.com/sorge-it/http-server/blob/main/.github/CONTRIBUTING.md)
+  now has the information from that section, and the section
+  "[Support](https://github.com/sorge-it/http-server#support)" has a link to `CONTRIBUTING.md`.
+- The README section
+  "[About the author](https://github.com/sorge-it/http-server#about-the-author)" is the one that
+  every public sorge-it package shares. It lists only public packages, so it no longer has a link
+  to a private repository.
+
 ## [1.2.0] - 2026-11-22
 
 ### Changed
@@ -61,7 +75,8 @@ response with the FrankenPHP binary, in the form that Chrome receives, and the p
 `net/http`. The README states the scope and each deliberate difference. The 0.x releases were
 private.
 
-[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/sorge-it/http-server/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/sorge-it/http-server/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/sorge-it/http-server/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sorge-it/http-server/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sorge-it/http-server/compare/v1.0.0...v1.1.0
