@@ -124,7 +124,9 @@ SHA-256.
 The weekly workflows compare the lock files in `tests/Fixtures` against the newest Caddy and
 FrankenPHP, and against the Go version of the binary that `release.lock` names. Then
 `go-net-http.yml` runs the `GoNetHttp` suite with that Go version, and `frankenphp.yml` runs each
-suite with the newest FrankenPHP.
+suite with the newest FrankenPHP. The weekly `works-with.yml` runs the handlers of the README with
+the newest Symfony, Laravel and Slim, and the weekly `tests.yml` runs the stack newest. Every action
+and every Docker image is pinned to a commit or a digest.
 
 ```sh
 composer go:extract        # cases.json again, after a change of a probe
