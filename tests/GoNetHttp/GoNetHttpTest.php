@@ -180,8 +180,8 @@ it('names in each place the Go of go.mod, which the fixture comes from', functio
 
     expect('go'.$go)->toBe(GoReference::version())
         ->and(file_get_contents(__DIR__.'/install-go.php'))->toContain("'go".$go."' => [")
-        ->and(file_get_contents(__DIR__.'/../../.github/docker/debian/Dockerfile'))->toContain('FROM golang:'.$go.'@')
-        ->and(file_get_contents(__DIR__.'/../../.github/docker/alpine/Dockerfile'))->toContain('FROM golang:'.$go.'-alpine@');
+        ->and(file_get_contents(__DIR__.'/../../docker/debian/Dockerfile'))->toContain('FROM golang:'.$go.'@')
+        ->and(file_get_contents(__DIR__.'/../../docker/alpine/Dockerfile'))->toContain('FROM golang:'.$go.'-alpine@');
 })->group('pins');
 
 // A git blob is the SHA-1 of `blob <length>\0<bytes>`. VERSION is not in go.lock, because it
